@@ -1,2706 +1,1682 @@
-local inputService = game:GetService("UserInputService")
-local tweenService = game:GetService("TweenService")
-local runService = game:GetService("RunService")
-local coreGui = game:GetService("CoreGui")
+local library = loadstring(game:HttpGet('https://raw.githubusercontent.com/obeseinsect/roblox/main/Ui%20Libraries/Elerium.lua'))()
 
-local library = {flags = {}, toggled = true, keybind = Enum.KeyCode.RightShift, dragSpeed = 0}
+-- Set the keytoclick value to "P”
+getgenv().keytoclick = "P"
 
-local themes = {
-    Dark = {
-        TextColor = Color3.fromRGB(255, 255, 255),
-        MainFrame = Color3.fromRGB(30, 30, 30),
-        TabBackground = Color3.fromRGB(20, 20, 20),
-        Tab = Color3.fromRGB(30, 30, 30),
-        EnabledText = Color3.fromRGB(255, 255, 255),
-        DisabledText = Color3.fromRGB(180, 180, 180),
-        TabToggleEnabled = Color3.fromRGB(30, 30, 30),
-        TabToggleDisabled = Color3.fromRGB(5, 5, 5),
-        TabToggleDisabledMouseOver = Color3.fromRGB(20, 20, 20),
-        Section = Color3.fromRGB(20, 20, 20),
-        Button = Color3.fromRGB(30, 30, 30),
-        ButtonMouseOver = Color3.fromRGB(40, 40, 40),
-        ToggleEnabled = Color3.fromRGB(0, 0, 139),
-        ToggleEnabledMouseOver = Color3.fromRGB(0, 0, 139),
-        ToggleDisabled = Color3.fromRGB(30, 30, 30),
-        ToggleDisabledMouseOver = Color3.fromRGB(40, 40, 40),
-        Box = Color3.fromRGB(30, 30, 30),
-        BoxFocused = Color3.fromRGB(40, 40, 40),
-        Slider = Color3.fromRGB(30, 30, 30),
-        SliderMouseOver = Color3.fromRGB(40, 40, 40),
-        SliderFill = Color3.fromRGB(0, 0, 139),
-        SliderFillSliding = Color3.fromRGB(0, 0, 139),
-        Dropdown = Color3.fromRGB(30, 30, 30),
-        DropdownMouseOver = Color3.fromRGB(40, 40, 40),
-        DropdownContent = Color3.fromRGB(20, 20, 20),
-        ColorPicker = Color3.fromRGB(20, 20, 20),
-        ColorPickerBoxes = Color3.fromRGB(30, 30, 30)
+-- Get the VirtualInputManager service
+local vim = game:GetService("VirtualInputManager")
+
+-- Function to handle button click
+local function onButtonClick()
+    -- Send the key event for V directly
+    vim:SendKeyEvent(true, Enum.KeyCode.P, false, game)
+end
+
+-- Function to create the GUI
+local function createGUI()
+    -- Create ScreenGui, Frame, and ImageButton
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "ScreenGui"
+    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+    local Frame = Instance.new("Frame")
+    Frame.Parent = ScreenGui
+    Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Frame.BackgroundTransparency = 1.000
+    Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Frame.BorderSizePixel = 0
+    Frame.Size = UDim2.new(0, 100, 0, 100)
+
+    local ImageButton = Instance.new("ImageButton")
+    ImageButton.Parent = Frame
+    ImageButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    ImageButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    ImageButton.BorderSizePixel = 0
+    ImageButton.Position = UDim2.new(0.579999983, 0, 0.680000007, 0)
+    ImageButton.Size = UDim2.new(0, 39, 0, 39)
+    ImageButton.Image = "http://www.roblox.com/asset/?id=18415408745"
+
+    -- Connect button click event to the function
+    ImageButton.MouseButton1Click:Connect(onButtonClick)
+
+    return ScreenGui
+end
+
+-- Function to check and recreate GUI if it doesn't exist
+local function checkAndRecreateGUI()
+    -- Check if the GUI exists
+    local existingGui = game.Players.LocalPlayer.PlayerGui:FindFirstChild("ScreenGui")
+    if not existingGui then
+        -- Recreate the GUI
+        createGUI()
+    end
+end
+
+-- Loop to continuously check for the existence of GUI
+while true do
+    checkAndRecreateGUI()
+    wait(1)  -- Adjust the wait time as needed to reduce server load
+end
+
+-- Lock
+local V3 = Vector3.new
+local V2 = Vector2.new
+local inf = math.huge
+getgenv().Settings = {
+    ["FearLas"] = {
+        ["Enabled"] = false,
+        ["DOT"] = false,
+        ["AIRSHOT"] = true,
+        ["Prediction"] = {
+            ["Horizontal"] = 0.185,
+            ["Vertical"] = 0.1,
+        },
+        ["CamPrediction"] = {
+            ["Prediction"] = {
+                ["Horizontal"] = 0.185,
+                ["Vertical"] = 0.1,
+            },
+        },
+        ["NOTIF"] = false,
+        ["AUTOPRED"] = false,
+        ["AdvancedAutoPred"] = false,
+        ["FOV"] = inf,
+        ["RESOLVER"] = trye,
+        ["LOCKTYPE"] = "Namecall",
+        ["TargetStats"] = false,
+        ["Resolver"] = {
+              ["Enabled"] = true,
+              ["Type"] = "None",
+        },
+       ["Camera"] = {
+        ["Enabled"] = false,
+        ["HoodCustomsBypass"] = false,
+     },
+        ["OnHit"] = {
+             ["Enabled"] = true,
+             ["Hitchams"] = {
+                  ["Enabled"] = false,
+                  ["Color"] = Color3.fromRGB(0,0,139),
+                  ["Transparency"] = 0,
+                  ["Material"] = "ForceField",
+             },
+            ["Hitsound"] = {
+                  ["Enabled"] = false,
+                  ["Sound"] = "hitsounds/sparkle.wav",
+                  ["Volume"] = 2,
+            },
+        }
     },
-    Light = {
-        TextColor = Color3.fromRGB(40, 40, 40),
-        Tab = Color3.fromRGB(225, 225, 225),
-        DropdownContent = Color3.fromRGB(235, 235, 235),
-        EnabledText = Color3.fromRGB(40, 40, 40),
-        BoxFocused = Color3.fromRGB(215, 215, 215),
-        SliderFill = Color3.fromRGB(0, 0, 139),
-        Box = Color3.fromRGB(225, 225, 225),
-        ButtonMouseOver = Color3.fromRGB(215, 215, 215),
-        Section = Color3.fromRGB(235, 235, 235),
-        Button = Color3.fromRGB(225, 225, 225),
-        ToggleDisabledMouseOver = Color3.fromRGB(215, 215, 215),
-        TabToggleDisabledMouseOver = Color3.fromRGB(235, 235, 235),
-        ColorPicker = Color3.fromRGB(235, 235, 235),
-        ToggleEnabled = Color3.fromRGB(0, 0, 139),
-        DisabledText = Color3.fromRGB(75, 75, 75),
-        ToggleDisabled = Color3.fromRGB(225, 225, 225),
-        TabToggleDisabled = Color3.fromRGB(250, 250, 250),
-        SliderFillSliding = Color3.fromRGB(0, 0, 139),
-        MainFrame = Color3.fromRGB(225, 225, 225),
-        SliderMouseOver = Color3.fromRGB(215, 215, 215),
-        Dropdown = Color3.fromRGB(225, 225, 225),
-        DropdownMouseOver = Color3.fromRGB(215, 215, 215),
-        ToggleEnabledMouseOver = Color3.fromRGB(0, 0, 139),
-        ColorPickerBoxes = Color3.fromRGB(225, 225, 225),
-        TabBackground = Color3.fromRGB(235, 235, 235),
-        TabToggleEnabled = Color3.fromRGB(225, 225, 225),
-        Slider = Color3.fromRGB(225, 225, 225)
-    }
+	["Silent"] = {
+		["Enabled"] = false,
+		["AimPart"] = "HumanoidRootPart",
+		["WallCheck"] = false,
+		["Visualize"] = false,
+		["Prediction"] = {
+		   ["Horizontal"] = 0.15,
+		   ["Vertical"] = 0.05,
+		},
+	    ["AutoPrediction"] = {
+	        ["Enabled"] = false,
+	        ["Type"] = "Normal", --//Normal, Custom
+           ["ping20_30"] = 0.12588,
+           ["ping30_40"] = 0.11911,
+           ["ping40_50"] = 0.12471,
+           ["ping50_60"] = 0.13766,
+           ["ping60_70"] = 0.13731,
+           ["ping70_80"] = 0.13951,
+           ["ping80_90"] = 0.14181,
+           ["ping90_100"] = 0.148,
+           ["ping100_110"] = 0.156,
+           ["ping110_120"] = 0.1567,
+           ["ping120_130"] = 0.1601,
+           ["ping130_140"] = 0.1637,
+           ["ping140_150"] = 0.173,
+           ["ping150_160"] = 0.1714,
+           ["ping160_170"] = 0.1863,
+           ["ping170_180"] = 0.1872,
+           ["ping180_190"] = 0.1848,
+           ["ping190_200"] = 0.1865,
+	    },
+		["Mode"] = "Namecall", --index,namecal
+	},
+	["FOV"] = {
+		["Enabled"] = false,
+		["Size"] = 23,
+		["Filled"] = false,
+		["Thickness"] = 0.66,
+		["Transparency"] = 0.9,
+		["Color"] = Color3.fromRGB(255,255,255),
+	},
+	["Misc"] = {
+	    ["NoDelay"] = false,
+	    ["AutoReload"] = false,
+	    ["AutoAir"] = {
+	        ["Enabled"] = false,
+	        ["Interval"] = 0.5,
+	    },
+	    ["CMDS"] = { 
+	        ["Enabled"] = false,
+	        ["FOVPrefix"] = "B",
+	        ["Prediction"] = "A",
+	   },
+	},
+	["Checks"] = { --entirely not
+	    ["UnlovkOnKO"] = false,
+	    ["TrashTalkOnKO"] = false,
+	},
+	["Resolution"] = {
+	    ["Value"] = 1,
+	   },
+	["Resolvers"] = {  --entirely not
+	    ["Enabled"] = false,
+	    ["AutoDetect"] = false,
+	    ["Type"] = "Recalculator",
+	},
+    ["Visuals"] = {
+        ["Ambient"] = {
+            ["Enabled"] = false,
+            ["Color"] = Color3.fromRGB(4, 0, 255),
+        },
+        ["OutDoor Ambient"] = {
+            ["Enabled"] = false,
+            ["Color"] = Color3.fromRGB(4, 0, 255)
+        },
+        ["Fog Modifications"] = {
+            ["Enabled"] = false,
+            ["Color"] = Color3.fromRGB(4, 0, 255),
+            ["Start"] = 15,
+            ["End"] = 100 
+        },
+        ["ColorCorrection"] = {
+            ["Enabled"] = false,
+            ["Brightness"] = 0,
+            ["Saturation"] = 5,
+            ["Contrast"] = 2,
+        },
+    },
 }
+getgenv().DistancesMid = 50
+getgenv().DistancesClose = 10
+getgenv().AimSpeed = 1
+getgenv().CAMPREDICTION = 0.185
+getgenv().CAMJUMPPREDICTION = 0.1
+getgenv().HorizontalSmoothness = 1
+getgenv().VerticallSmoothness = 0.5
+getgenv().ShakeX = 0
+getgenv().ShakeY = 0
+getgenv().ShakeZ = 0
+getgenv().PREDICTION = 0.185
+getgenv().JUMPPREDICTION = 0.1
+getgenv().SelectedPart = "HumanoidRootPart" --// LowerTorso, UpperTorso, Head
+getgenv().Prediction = "Normal"
+getgenv().AutoPredType = "Normal"
+getgenv().Resolver = false
+local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 
-local themeObjects = {}
-for i, v in next, themes.Dark do
-    themeObjects[i] = {}
+local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
+
+
+function SendNotification(text)
+    Notification:Notify(
+        {Title = "blast", Description = "Big balls energy - "..text},
+        {OutlineColor = Color3.fromRGB(0,0,139),Time = 3, Type = "image"},
+        {Image = "http://www.roblox.com/asset/?id=6023426923", ImageColor = Color3.fromRGB(0,0,139)}
+    )
 end
-
-local utility = {}
-
-function utility.starts_with(str, start)
-    return str:sub(1, string.len(start)) == start
-end
-
-function utility.create(class, properties)
-    local obj = Instance.new(class)
-
-    local forcedProperties = {
-        BorderSizePixel = 0,
-        AutoButtonColor = false
-    }
-
-    obj.Name = ""
-
-    for i = 1, 16 do
-        obj.Name = obj.Name .. string.char(math.random(48, 122))
+function calculateVelocity(initialPos, finalPos, timeInterval)
+    local displacement = finalPos - initialPos
+    local velocity = displacement / timeInterval
+    return velocity
     end
+    game:GetService('RunService').RenderStepped:connect(function(deltaTime)
+    if getgenv().Resolver == true and enabled then 
+        local character = Plr.Character[getgenv().SelectedPart]
+        local lastPosition = character.Position
+            task.wait()
+        local currentPosition = character.Position
+        local velocity = calculateVelocity(lastPosition, currentPosition, deltaTime)
+        character.AssemblyLinearVelocity = velocity
+        character.Velocity = velocity
+            lastPosition = currentPosition
+        end
+    end)
 
-    for prop, v in next, properties do
-        obj[prop] = v
+--// Change Prediction,  AutoPrediction Must Be Off
+    local lplr = game.Players.LocalPlayer
+    local AnchorCount = 0
+    local MaxAnchor = 50
+    local CC = game:GetService"Workspace".CurrentCamera
+    local Plr;
+    local enabled = false
+    local mouse = game.Players.LocalPlayer:GetMouse()
+    local placemarker = Instance.new("Part", game.Workspace)
+    function makemarker(Parent, Adornee, Color, Size, Size2)
+        local e = Instance.new("BillboardGui", Parent)
+        e.Name = "PP"
+        e.Adornee = Adornee
+        e.Size = UDim2.new(Size, Size2, Size, Size2)
+        e.AlwaysOnTop = getgenv().Settings.FearLas.DOT
+        local a = Instance.new("Frame", e)
+        if getgenv().Settings.FearLas.DOT == true then
+        a.Size = UDim2.new(1, 1, 1, 1)
+        else
+        a.Size = UDim2.new(0, 0, 0, 0)
+        end
+        if getgenv().Settings.FearLas.DOT == true then
+        a.Transparency = 0
+        a.BackgroundTransparency = 0
+        else
+        a.Transparency = 1
+        a.BackgroundTransparency = 1
+        end
+        a.BackgroundColor3 = Color
+        local g = Instance.new("UICorner", a)
+        if getgenv().Settings.FearLas.DOT == true then
+        g.CornerRadius = UDim.new(1, 1)
+        else
+        g.CornerRadius = UDim.new(1, 1) 
+        end
+        return(e)
     end
-
-    for prop, v in next, forcedProperties do
-        pcall(function()
-            obj[prop] = v
+    local data = game.Players:GetPlayers()
+    function noob(player)
+        local character
+        repeat wait() until player.Character
+        local handler = makemarker(guimain, player.Character:WaitForChild(SelectedPart), Color3.fromRGB(107, 184, 255), 0.3, 3)
+        handler.Name = player.Name
+        player.CharacterAdded:connect(function(Char) handler.Adornee = Char:WaitForChild(SelectedPart) end)
+ 
+ 
+        spawn(function()
+            while wait() do
+                if player.Character then
+                end
+            end
         end)
     end
-    
-    return obj
-end
-
-function utility.tween(obj, info, properties, callback)
-    local anim = tweenService:Create(obj, TweenInfo.new(unpack(info)), properties)
-    anim:Play()
-
-    if callback then
-        anim.Completed:Connect(callback)
+ 
+    for i = 1, #data do
+        if data[i] ~= game.Players.LocalPlayer then
+            noob(data[i])
+        end
     end
-end
-
-function utility.ripple(obj)
-    local ripple = Instance.new("Frame")
-    Instance.new("UICorner", ripple).CornerRadius = UDim.new(0, 256)
-    
-    ripple.ZIndex = obj.ZIndex + 1
-    ripple.Parent = obj
-    ripple.Position = UDim2.new(0.5, 0, 0.5, 0)
-    ripple.BackgroundTransparency = 0.4
-
-    utility.tween(ripple, {0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out}, {BackgroundTransparency = 1, Size = UDim2.new(0, obj.AbsoluteSize.X, 0, obj.AbsoluteSize.X), Position = UDim2.new(0.5, -obj.AbsoluteSize.X / 2, 0.5, -obj.AbsoluteSize.X / 2)}, function() ripple:Destroy() end)
-end
-
-function utility.drag(obj)
-    local start, objPosition, dragging
-
-    obj.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            start = input.Position
-            objPosition = obj.Position
+ 
+    game.Players.PlayerAdded:connect(function(Player)
+        noob(Player)
+    end)
+ 
+    spawn(function()
+        placemarker.Anchored = true
+        placemarker.CanCollide = false
+        if getgenv().Settings.FearLas.DOT == true then
+        placemarker.Size = V3(0, 0, 0)
+        else
+        placemarker.Size = V3(0, 0, 0)
+        end
+        placemarker.Transparency = 1
+        if getgenv().Settings.FearLas.DOT then
+        makemarker(placemarker, placemarker, Color3.fromRGB(0,0,139), 1, 0)
         end
     end)
-
-    obj.InputEnded:Connect(function(input )
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then 
-            dragging = false
-        end
-    end)
-
-    inputService.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch and dragging then   
-            utility.tween(obj, {library.dragSpeed}, {Position = UDim2.new(objPosition.X.Scale, objPosition.X.Offset + (input.Position - start).X, objPosition.Y.Scale, objPosition.Y.Offset + (input.Position - start).Y)})
-        end
-    end)
+ local Tool = Instance.new("Tool")
+Tool.RequiresHandle = false
+Tool.Name = "Lock Tool"
+Tool.Parent = game.Players.LocalPlayer.Backpack
+local player = game.Players.LocalPlayer
+local function connectCharacterAdded()
+    player.CharacterAdded:Connect(onCharacterAdded)
+end
+connectCharacterAdded()
+player.CharacterRemoving:Connect(function()
+Tool.Parent = game.Players.LocalPlayer.Backpack
+end)
+function hitsound()
+    local Hit = Instance.new("Sound")
+    Hit.Parent = game.SoundService
+    Hit.SoundId = getcustomasset(getgenv().Settings.FearLas.OnHit.Hitsound.Sound)
+    Hit.Volume = getgenv().Settings.FearLas.OnHit.Hitsound.Volume
+    Hit.Looped = false
+    Hit:Play()
+    Hit.Ended:Connect(function()                                         Hit:Destroy()
+        end)
 end
 
-function utility.get_center(sizeX, sizeY)
-    return UDim2.new(0.5, -(sizeX / 2), 0.5, -(sizeY / 2))
-end
-
-function utility.hex_to_rgb(hex)
-    return Color3.fromRGB(tonumber("0x" .. hex:sub(2, 3)), tonumber("0x" .. hex:sub(4, 5)), tonumber("0x"..hex:sub(6, 7)))
-end
-
-function utility.rgb_to_hex(color)
-	return string.format("#%02X%02X%02X", math.clamp(color.R * 255, 0, 255), math.clamp(color.G * 255, 0, 255), math.clamp(color.B * 255, 0, 255))
-end
-
-function utility.format_table(tbl)
-    if tbl then
-        local oldtbl = tbl
-        local newtbl = {}
-        local formattedtbl = {}
-
-        for option, v in next, oldtbl do
-            newtbl[option:lower()] = v
-        end
-
-        setmetatable(formattedtbl, {
-            __newindex = function(t, k, v)
-                rawset(newtbl, k:lower(), v)
-            end,
-            __index = function(t, k, v)
-                return newtbl[k:lower()]
+Tool.Activated:Connect(function()
+if getgenv().Settings.FearLas.Enabled or getgenv().Settings.FearLas.Camera.Enabled then
+            if enabled == true then
+                enabled = false
+                    Plr = LockToPlayer()
+                if getgenv().Settings.FearLas.NOTIF == true then 
+ SendNotification("Unlocked")
             end
-        })
+            else
+                Plr = LockToPlayer()
+                TargetPlayer = tostring(Plr)
+                enabled = true
+local oldHealt = game.Players[TargetPlayer].Character.Humanoid.Health
+                        if getgenv().Settings.FearLas.OnHit.Hitsound.Enabled and Plr ~= nil then
 
-        return formattedtbl
-    else
-        return {}
+                             game.Players[TargetPlayer].Character.Humanoid.HealthChanged:Connect(function(neHealth)                            
+if neHealth < oldHealt then
+hitsound()
+elseif neHealth > oldHealt then
+print("nil")
+elseif game.Players[TargetPlayer].Character.Humanoid.Health < 0 then
+print("nil")
+end
+oldHealt = neHealth
+end)
+end                                      
+              
+if getgenv().Settings.FearLas.OnHit.Hitchams.Enabled then
+   
+        if Plr ~= nil then  game.Players[TargetPlayer].Character.Humanoid.HealthChanged:Connect(function(neHealth)
+        local Clone = game.Players[TargetPlayer].Character:Clone()
+        if neHealth > oldHealt then
+            Clone:Destroy()
+        end
+        if game.Players[TargetPlayer].Character.Humanoid.Health < 0 then
+            Clone:Destroy()
+        end
+        if neHealth < oldHealt then
+            -- Main Hit-Chams --
+            game.Players[TargetPlayer].Character.Archivable = true
+            for _, Obj in next, Clone:GetDescendants() do
+                if Obj.Name == "HumanoidRootPart" or Obj:IsA("Humanoid") or Obj:IsA("LocalScript") or Obj:IsA("Script") or Obj:IsA("Decal") then
+                    Obj:Destroy()
+                elseif Obj:IsA("BasePart") or Obj:IsA("Meshpart") or Obj:IsA("Part") then
+                    if Obj.Transparency == 1 then
+                        Obj:Destroy()
+                    else
+                        Obj.CanCollide = false
+                        Obj.Anchored = true
+                        Obj.Material = getgenv().Settings.FearLas.OnHit.Hitchams.Material
+                        Obj.Color = getgenv().Settings.FearLas.OnHit.Hitchams.Color
+                        Obj.Transparency = getgenv().Settings.FearLas.OnHit.Hitchams.Transparency
+                        Obj.Size = Obj.Size + V3(0.05, 0.05, 0.05)
+                    end
+                end
+           
+            end
+            Clone.Parent = game.Workspace
+            local start = tick()
+            local connection
+            connection = game:GetService("RunService").Heartbeat:Connect(function()
+                if tick() - start >= 3 then
+                    connection:Disconnect()
+                    Clone:Destroy()
+                end
+            end)
+        end
+
+            oldHealt = neHealth
+
+    end)
     end
 end
+                if getgenv().Settings.FearLas.NOTIF == true then
+SendNotification("Target: "..Plr.Character.Humanoid.DisplayName)
+                end
+            end
+   else
+  SendNotification("Cam/Target not enabled!")
+        end
+    end)
+ 
+local TargetStats = Instance.new("ScreenGui")
+local Background = Instance.new("Frame")
+local Picture = Instance.new("ImageLabel")
+local Top = Instance.new("Frame")
+local UIGradient = Instance.new("UIGradient")
+local UIGradient_2 = Instance.new("UIGradient")
+local HealthBarBackground = Instance.new("Frame")
+local UIGradient_3 = Instance.new("UIGradient")
+local HealthBar = Instance.new("Frame")
+local UIGradient_4 = Instance.new("UIGradient")
+local NameOfTarget = Instance.new("TextLabel")
 
-local venuslib = utility.create("ScreenGui", {})
+spawn(function()
+TargetStats.Name = "TargetStats"
+TargetStats.Parent = game.CoreGui
+TargetStats.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-if syn and syn.protect_gui then
-    syn.protect_gui(venuslib)
-end
+Background.Name = "Background"
+Background.Parent = TargetStats
+Background.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Background.BorderSizePixel = 0
+Background.Position = UDim2.new(0.388957828, 0, 0.700122297, 0)
+Background.Size = UDim2.new(0, 358, 0, 71)
+Background.Visible = false
 
-venuslib.Parent = coreGui
+Picture.Name = "Picture"
+Picture.Parent = Background
+Picture.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Picture.BorderSizePixel = 0
+Picture.Position = UDim2.new(0.0279329624, 0, 0.0704225376, 0)
+Picture.Size = UDim2.new(0, 59, 0, 59)
+Picture.Transparency = 1
+Picture.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
 
-library = utility.format_table(library)
+Top.Name = "Top"
+Top.Parent = Background
+Top.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Top.BorderSizePixel = 0
+Top.Position = UDim2.new(0, 0, -0.101449274, 0)
+Top.Size = UDim2.new(0, 358, 0, 7)
 
-inputService.InputBegan:Connect(function(input)
-    if input.KeyCode == library.keybind then
-        library.toggled = not library.toggled
-        venuslib.Enabled = library.toggled
-    end
+UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(115,0,0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(155,40,0))}
+UIGradient.Rotation = 90
+UIGradient.Parent = Top
+
+UIGradient_2.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(52, 52, 52)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 0, 0))}
+UIGradient_2.Rotation = 90
+UIGradient_2.Parent = Background
+
+HealthBarBackground.Name = "HealthBarBackground"
+HealthBarBackground.Parent = Background
+HealthBarBackground.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+HealthBarBackground.BorderSizePixel = 0
+HealthBarBackground.Position = UDim2.new(0.215083793, 0, 0.348234326, 0)
+HealthBarBackground.Size = UDim2.new(0, 270, 0, 19)
+HealthBarBackground.Transparency = 1
+
+UIGradient_3.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(58, 58, 58)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(30, 30, 30))}
+UIGradient_3.Rotation = 90
+UIGradient_3.Parent = HealthBarBackground
+
+HealthBar.Name = "HealthBar"
+HealthBar.Parent = HealthBarBackground
+HealthBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+HealthBar.BorderSizePixel = 0
+HealthBar.Position = UDim2.new(-0.00336122862, 0, 0.164894029, 0)
+HealthBar.Size = UDim2.new(0, 130, 0, 19)
+
+UIGradient_4.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(184, 159, 227)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(102, 88, 156))}
+UIGradient_4.Rotation = 90
+UIGradient_4.Parent = HealthBar
+
+NameOfTarget.Name = "NameOfTarget"
+NameOfTarget.Parent = Background
+NameOfTarget.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+NameOfTarget.BackgroundTransparency = 1.000
+NameOfTarget.Position = UDim2.new(0.220670387, 0, 0.0704225376, 0)
+NameOfTarget.Size = UDim2.new(0, 268, 0, 19)
+NameOfTarget.Font = Enum.Font.Code
+NameOfTarget.TextColor3 = Color3.fromRGB(255, 255, 255)
+NameOfTarget.TextScaled = true
+NameOfTarget.TextSize = 14.000
+NameOfTarget.TextStrokeTransparency = 0.000
+NameOfTarget.TextWrapped = true
 end)
 
-function library:Load(opts)
-    local options = utility.format_table(opts)
-    local name = options.name
-    local sizeX = options.sizeX or 440
-    local sizeY = options.sizeY or 480
-    local theme = themes[options.theme] or themes.Dark
-    local colorOverrides = options.colorOverrides or {}
-
-    for i, v in next, colorOverrides do
-        if theme[i] then
-            theme[i] = v
-        end
-    end
-
-    local holder = utility.create("Frame", {
-        Size = UDim2.new(0, sizeX, 0, 26),
-        BackgroundTransparency = 1,
-        Position = utility.get_center(sizeX, sizeY),
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        Parent = venuslib
-    })
-
-    utility.create("TextLabel", {
-        Size = UDim2.new(0, 1, 1, 0),
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 8, 0, 0),
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        FontSize = Enum.FontSize.Size14,
-        TextSize = 14,
-        TextColor3 = theme.TextColor,
-        Text = name,
-        Font = Enum.Font.Gotham,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        ZIndex = 2,
-        Parent = holder
-    })
-
-    utility.drag(holder)
-
-    local main = utility.create("Frame", {
-        Size = UDim2.new(1, 0, 0, sizeY),
-        BackgroundColor3 = theme.MainFrame,
-        Parent = holder
-    })
-
-    utility.create("UICorner", {
-        CornerRadius = UDim.new(0, 0),
-        Parent = main
-    })
-
-    local tabs = utility.create("Frame", {
-        ZIndex = 2,
-        Size = UDim2.new(1, -16, 1, -34),
-        Position = UDim2.new(0, 8, 0, 26),
-        BackgroundColor3 = theme.TabBackground,
-        Parent = main
-    })
-
-    
-    utility.create("UICorner", {
-        CornerRadius = UDim.new(0, 0),
-        Parent = tabs
-    })
-
-    local tabToggles = utility.create("Frame", {
-        Size = UDim2.new(1, -12, 0, 18),
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 6, 0, 6),
-        Parent = tabs
-    })
-    
-    local tabFrames = utility.create("Frame", {
-        ZIndex = 4,
-        Size = UDim2.new(1, -12, 1, -29),
-        Position = UDim2.new(0, 6, 0, 24),
-        BackgroundColor3 = theme.Tab,
-        Parent = tabs
-    })
-
-    utility.create("UICorner", {
-        Parent = tabFrames
-    })
-    
-    local tabFrameHolder = utility.create("Frame", {
-        Size = UDim2.new(1, -12, 1, -12),
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 6, 0, 6),
-        BackgroundColor3 = Color3.fromRGB(20, 20, 20),
-        Parent = tabFrames
-    })
-    
-    utility.create("UIListLayout", {
-        FillDirection = Enum.FillDirection.Horizontal,
-        SortOrder = Enum.SortOrder.LayoutOrder,
-        Padding = UDim.new(0, 4),
-        Parent = tabToggles
-    })
-
-    local windowTypes = {count = 0}
-    windowTypes = utility.format_table(windowTypes)
-
-    function windowTypes:Tab(name)
-        windowTypes.count = windowTypes.count + 1
-        local toggled = windowTypes.count == 1
-
-        local tabToggle = utility.create("TextButton", {
-            ZIndex = 4,
-            BackgroundColor3 = toggled and theme.TabToggleEnabled or theme.TabToggleDisabled,
-            Size = UDim2.new(0, 52, 1, 0),
-            FontSize = Enum.FontSize.Size12,
-            TextSize = 12,
-            TextColor3 = toggled and theme.EnabledText or theme.DisabledText,
-            Text = name,
-            Font = Enum.Font.Gotham,
-            Parent = tabToggles
-        })
-
-        if tabToggle.TextBounds.X + 16 > 52 then
-            tabToggle.Size = UDim2.new(0, tabToggle.TextBounds.X + 16, 1, 0)
-        end
-        
-        local noround = utility.create("Frame", {
-            ZIndex = 3,
-            Size = UDim2.new(1, 0, 1, 5),
-            Position = UDim2.new(0, 0, 1, -10),
-            BackgroundColor3 = toggled and theme.TabToggleEnabled or theme.TabToggleDisabled,
-            Parent = tabToggle
-        })
-
-        tabToggle:GetPropertyChangedSignal("BackgroundColor3"):Connect(function()
-            noround.BackgroundColor3 = tabToggle.BackgroundColor3
-        end)
-        
-        utility.create("UICorner", {
-            CornerRadius = UDim.new(0, 8),
-            Parent = tabToggle
-        })
-
-        local tab = utility.create("Frame", {
-            Size = UDim2.new(1, 0, 1, 0),
-            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-            Visible = toggled,
-            Parent = tabFrameHolder
-        })
-
-        utility.create("UIListLayout", {
-            FillDirection = Enum.FillDirection.Horizontal,
-            SortOrder = Enum.SortOrder.LayoutOrder,
-            Padding = UDim.new(0, 6),
-            Parent = tab
-        })
-        
-        local column1 = utility.create("ScrollingFrame", {
-            Size = UDim2.new(0.5, -3, 1, 0),
-            BackgroundTransparency = 1,
-            Active = true,
-            ScrollBarThickness = 0,
-            CanvasSize = UDim2.new(0, 0, 0, 0),
-            Parent = tab
-        })
-
-        local column1list = utility.create("UIListLayout", {
-            SortOrder = Enum.SortOrder.LayoutOrder,
-            Padding = UDim.new(0, 6),
-            Parent = column1
-        })
-
-        column1list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-            column1.CanvasSize = UDim2.new(0, 0, 0, column1list.AbsoluteContentSize.Y)
-        end)
-
-        local column2 = utility.create("ScrollingFrame", {
-            Size = UDim2.new(0.5, -3, 1, 0),
-            BackgroundTransparency = 1,
-            Active = true,
-            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-            ScrollBarThickness = 0,
-            CanvasSize = UDim2.new(0, 0, 0, 0),
-            Parent = tab
-        })
-
-        local column2list = utility.create("UIListLayout", {
-            SortOrder = Enum.SortOrder.LayoutOrder,
-            Padding = UDim.new(0, 6),
-            Parent = column2
-        })
-
-        column2list:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-            column2.CanvasSize = UDim2.new(0, 0, 0, column2list.AbsoluteContentSize.Y)
-        end)
-
-        local function toggleTab()
-            for i, v in next, tabFrameHolder:GetChildren() do
-                if v ~= tab then
-                    v.Visible = false
-                end
-            end
-
-            tab.Visible = true
-
-            for i, v in next, tabToggles:GetChildren() do
-                if v:IsA("TextButton") then
-                    if v ~= tabToggle then
-                        utility.tween(v, {0.2}, {TextColor3 = theme.DisabledText, BackgroundColor3 = theme.TabToggleDisabled})
-                    end
-                end
-            end
-
-            utility.tween(tabToggle, {0.2}, {TextColor3 = theme.EnabledText, BackgroundColor3 = theme.TabToggleEnabled})
-        end
-
-        tabToggle.MouseButton1Click:Connect(toggleTab)
-
-        tabToggle.MouseEnter:Connect(function()
-            if not tab.Visible then
-                utility.tween(tabToggle, {0.2}, {BackgroundColor3 = theme.TabToggleDisabledMouseOver})
-            end
-        end)
-
-        tabToggle.MouseLeave:Connect(function()
-            if not tab.Visible then
-                utility.tween(tabToggle, {0.2}, {BackgroundColor3 = theme.TabToggleDisabled})
-            end
-        end)
-
-        local tabTypes = {}
-        tabTypes = utility.format_table(tabTypes)
-
-        function tabTypes:Open()
-            toggleTab()
-        end
-
-        function tabTypes:Section(opts)
-            local options = utility.format_table(opts)
-            local name = options.name
-            local column = options.column or 1
-            column = column == 1 and column1 or column == 2 and column2
-
-            local section = utility.create("Frame", {
-                ZIndex = 5,
-                Size = UDim2.new(1, 0, 0, 24),
-                BackgroundColor3 = theme.Section,
-                Parent = column
-            })
-            
-            utility.create("UICorner", {
-                Parent = section
-            })
-
-            utility.create("TextLabel", {
-                ZIndex = 6,
-                Size = UDim2.new(0, 1, 0, 16),
-                BackgroundTransparency = 1,
-                Position = UDim2.new(0, 8, 0, 4),
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                FontSize = Enum.FontSize.Size12,
-                TextSize = 12,
-                TextColor3 = theme.TextColor,
-                Text = name,
-                Font = Enum.Font.Gotham,
-                TextXAlignment = Enum.TextXAlignment.Left,
-                Parent = section
-            })
-
-            local sectionContent = utility.create("Frame", {
-                Size = UDim2.new(1, -10, 1, -24),
-                Position = UDim2.new(0, 5, 0, 22),
-                BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                Parent = section
-            })
-
-            local sectionContentList = utility.create("UIListLayout", {
-                SortOrder = Enum.SortOrder.LayoutOrder,
-                Padding = UDim.new(0, 6),
-                Parent = sectionContent
-            })
-
-            sectionContentList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-                section.Size = UDim2.new(1, 0, 0, sectionContentList.AbsoluteContentSize.Y + 27)
-            end)
-
-            local sectionTypes = {}
-            sectionTypes = utility.format_table(sectionTypes)
-
-            function sectionTypes:Hide()
-                section.Visible = false
-            end
-
-            function sectionTypes:Show()
-                section.Visible = true
-            end
-
-            function sectionTypes:Label(text)
-                local label = utility.create("TextLabel", {
-                    ZIndex = 6,
-                    Size = UDim2.new(1, 0, 0, 10),
-                    BackgroundTransparency = 1,
-                    Position = UDim2.new(1, 5, 0, 0),
-                    FontSize = Enum.FontSize.Size12,
-                    TextSize = 12,
-                    Text = text,
-                    TextColor3 = theme.TextColor,
-                    Font = Enum.Font.Gotham,
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                    Parent = sectionContent
-                })
-
-                local labelTypes = {}
-                labelTypes = utility.format_table(labelTypes)
-
-                function labelTypes:Hide()
-                    label.Visible = false
-                end
-    
-                function labelTypes:Show()
-                    label.Visible = true
-                end
-
-                return labelTypes
-            end
-
-            function sectionTypes:Button(opts)
-                local options = utility.format_table(opts)
-                local name = options.name
-                local callback = options.callback
-
-                local button = utility.create("TextButton", {
-                    ZIndex = 6,
-                    Size = UDim2.new(1, 0, 0, 16),
-                    BackgroundColor3 = theme.Button,
-                    FontSize = Enum.FontSize.Size12,
-                    TextSize = 12,
-                    Text = name,
-                    TextColor3 = theme.TextColor,
-                    Font = Enum.Font.Gotham,
-                    ClipsDescendants = true,
-                    Parent = sectionContent
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = button
-                })
-
-                button.MouseButton1Click:Connect(function()
-                    callback()
-                    utility.ripple(button)
-                end)
-
-                button.MouseEnter:Connect(function()
-                    utility.tween(button, {0.2}, {BackgroundColor3 = theme.ButtonMouseOver})
-                end)
-
-                button.MouseLeave:Connect(function()
-                    utility.tween(button, {0.2}, {BackgroundColor3 = theme.Button})
-                end)
-
-                local buttonTypes = {}
-                buttonTypes = utility.format_table(buttonTypes)
-
-                function buttonTypes:Hide()
-                    button.Visible = false
-                end
-
-                function buttonTypes:Show()
-                    button.Visible = true
-                end
-
-                return buttonTypes
-            end
-
-            function sectionTypes:Toggle(opts)
-                local options = utility.format_table(opts)
-                local name = options.name
-                local flag = options.flag or nil
-                local callback = options.callback or function() end
-
-                local toggled = false
-                local mouseOver = false
-
-                local toggle = utility.create("TextButton", {
-                    Size = UDim2.new(1, 0, 0, 10),
-                    BackgroundTransparency = 1,
-                    FontSize = Enum.FontSize.Size14,
-                    TextSize = 14,
-                    Text = "",
-                    Font = Enum.Font.SourceSans,
-                    Parent = sectionContent
-                })
-
-                local icon = utility.create("Frame", {
-                    ZIndex = 6,
-                    Size = UDim2.new(0, 10, 0, 10),
-                    BackgroundColor3 = theme.ToggleDisabled,
-                    Parent = toggle
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 0),
-                    Parent = icon
-                })
-                
-                local title = utility.create("TextLabel", {
-                    ZIndex = 6,
-                    Size = UDim2.new(0, 1, 0, 10),
-                    BackgroundTransparency = 1,
-                    Position = UDim2.new(1, 5, 0, 0),
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    FontSize = Enum.FontSize.Size12,
-                    TextSize = 12,
-                    TextColor3 = theme.DisabledText,
-                    Text = name,
-                    Font = Enum.Font.Gotham,
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                    Parent = icon
-                })
-
-                local function toggleToggle()
-                    toggled = not toggled
-
-                    utility.tween(title, {0.2}, {TextColor3 = toggled and theme.EnabledText or theme.DisabledText})
-
-                    if not mouseOver then
-                        utility.tween(icon, {0.2}, {BackgroundColor3 = toggled and theme.ToggleEnabled or theme.ToggleDisabled})
-                    else
-                        utility.tween(icon, {0.2}, {BackgroundColor3 = toggled and theme.ToggleEnabledMouseOver or theme.ToggleDisabledMouseOver})
-                    end
-
-                    callback(toggled)
-                    if flag then
-                        library.flags[flag] = toggled
-                    end
-                end
-
-                toggle.MouseButton1Click:connect(toggleToggle)
-
-                toggle.MouseEnter:Connect(function()
-                    mouseOver = true
-                    utility.tween(icon, {0.2}, {BackgroundColor3 = toggled and theme.ToggleEnabledMouseOver or theme.ToggleDisabledMouseOver})
-                end)
-
-                toggle.MouseLeave:Connect(function()
-                    mouseOver = false
-                    utility.tween(icon, {0.2}, {BackgroundColor3 = toggled and theme.ToggleEnabled or theme.ToggleDisabled})
-                end)
-
-                local toggleTypes = {}
-                toggleTypes = utility.format_table(toggleTypes)
-
-                function toggleTypes:Toggle(bool)
-                    if toggled ~= bool then
-                        toggleToggle()
-                    end
-                end
-
-                function toggleTypes:Hide()
-                    toggle.Visible = false
-                end
-
-                function toggleTypes:Show()
-                    toggle.Visible = true
-                end
-
-                return toggleTypes
-            end
-
-            function sectionTypes:Box(opts)
-                local options = utility.format_table(opts)
-                local placeholder = options.name or options.placeholder
-                local default = options.default or ""
-                local flag = options.flag or nil
-                local callback = options.callback or nil
-
-                local mouseOver = false
-                local focused = false
-
-                local box = utility.create("TextBox", {
-                    ZIndex = 6,
-                    Size = UDim2.new(1, 0, 0, 16),
-                    BackgroundColor3 = theme.Box,
-                    PlaceholderColor3 = Color3.fromRGB(180, 180, 180),
-                    FontSize = Enum.FontSize.Size12,
-                    TextSize = 12,
-                    TextColor3 = theme.TextColor,
-                    Text = "",
-                    Font = Enum.Font.Gotham,
-                    PlaceholderText = placeholder,
-                    Parent = sectionContent
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = box
-                })
-
-                local function boxFinished()
-                    focused = false
-
-                    if not mouseOver then
-                        utility.tween(box, {0.2}, {BackgroundColor3 = theme.Box})
-                    end
-
-                    if flag then
-                        library.flags[flag] = box.Text
-                    end
-
-                    callback(box.Text)
-                end
-
-                box.Focused:Connect(function()
-                    focused = true
-                    utility.tween(box, {0.2}, {BackgroundColor3 = theme.BoxFocused})
-                end)
-
-                box.MouseEnter:Connect(function()
-                    mouseOver = true
-                    utility.tween(box, {0.2}, {BackgroundColor3 = theme.BoxFocused})
-                end)
-
-                box.MouseLeave:Connect(function()
-                    mouseOver = false
-                    if not focused then
-                        utility.tween(box, {0.2}, {BackgroundColor3 = theme.Box})
-                    end
-                end)
-
-                box.FocusLost:Connect(boxFinished)
-
-                local boxTypes = {}
-                boxTypes = utility.format_table(boxTypes)
-
-                function boxTypes:Set(text)
-                    box.Text = text
-                    boxFinished()
-                end
-                
-                function boxTypes:Hide()
-                    box.Visible = false
-                end
-                
-                function boxTypes:Show()
-                    box.Visible = true
-                end
-                
-                return boxTypes
-            end
-
-            function sectionTypes:Slider(opts)
-                local options = utility.format_table(opts)
-                local name = options.name
-                local min = options.min or 1
-                local max = options.max or 100
-                local decimals = options.decimals or 0.1
-                local default = options.default and math.clamp(options.default, min, max) or min
-                local valueType = options.valueType or "/" .. tostring(max)
-                local flag = options.flag or nil
-                local callback = options.callback or function() end
-                
-                local mouseOver = false
-                local sliding = false
-
-                local slider = utility.create("Frame", {
-                    ZIndex = 6,
-                    Size = UDim2.new(1, 0, 0, 16),
-                    ClipsDescendants = true,
-                    BackgroundColor3 = theme.Slider,
-                    Parent = sectionContent
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = slider
-                })
-                
-                local fill = utility.create("Frame", {
-                    ZIndex = 7,
-                    Size = UDim2.new((default - min) / (max - min), 0, 1, 0),
-                    BackgroundColor3 = theme.SliderFill,
-                    Parent = slider
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = fill
-                })
-                
-                local title = utility.create("TextLabel", {
-                    ZIndex = 8,
-                    Size = UDim2.new(1, 0, 1, 0),
-                    BackgroundTransparency = 1,
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    FontSize = Enum.FontSize.Size12,
-                    TextSize = 12,
-                    TextColor3 = theme.TextColor,
-                    Text = name .. ": " .. default .. valueType,
-                    Font = Enum.Font.Gotham,
-                    Parent = slider
-                })
-
-                local function slide(input)
-                    local sizeX = math.clamp((input.Position.X - slider.AbsolutePosition.X) / slider.AbsoluteSize.X, 0, 1)
-                    utility.tween(fill, {0.3}, {Size = UDim2.new(sizeX, 0, 1, 0)})
-
-                    local value = math.floor((((max - min) * sizeX) + min) * (decimals * 10)) / (decimals * 10)
-                    title.Text = name .. ": " .. value .. valueType
-
-                    if flag then 
-                        library.flags[flag] = value
-                    end
-
-                    callback(value)
-                end
-
-                slider.InputBegan:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        sliding = true
-                        utility.tween(fill, {0.2}, {BackgroundColor3 = theme.SliderFillSliding})
-                        slide(input)
-                    end
-                end)
-
-                slider.InputEnded:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        utility.tween(fill, {0.2}, {BackgroundColor3 = theme.SliderFill})
-                        sliding = false
-                        if not mouseOver then
-                            utility.tween(slider, {0.2}, {BackgroundColor3 = theme.Slider})
-                        end
-                    end
-                end)
-
-                slider.MouseEnter:Connect(function()
-                    mouseOver = true
-                    utility.tween(slider, {0.2}, {BackgroundColor3 = theme.SliderMouseOver})
-                end)
-
-                slider.MouseLeave:Connect(function()
-                    mouseOver = false
-                    if not sliding then
-                        utility.tween(slider, {0.2}, {BackgroundColor3 = theme.Slider})
-                    end
-                end)
-
-                inputService.InputChanged:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        if sliding then
-                            slide(input)
-                        end
-                    end
-                end)
-
-                local sliderTypes = {}
-                sliderTypes = utility.format_table(sliderTypes)
-
-                function sliderTypes:Set(value)
-                    value = math.floor(value * (decimals * 10)) / (decimals * 10)
-                    value = math.clamp(value, min, max)
-
-                    fill.Size = UDim2.new((value - min) / (max - min), 0, 1, 0)
-                    title.Text = name .. ": " .. value .. valueType
-                end
-
-                function sliderTypes:Hide()
-                    slider.Visible = false
-                end
-
-                function sliderTypes:Show()
-                    slider.Visible = true
-                end
-
-                return sliderTypes
-            end
-
-            function sectionTypes:Dropdown(opts)
-                local options = utility.format_table(opts)
-                local default = options.default or nil
-                local contentTable = options.content or {}
-                local multiChoice = options.multiChoice or false
-                local flag = options.flag or nil
-                local callback = options.callback or function() end
-
-                local chosen = {}
-                local curValue = default
-                local open = false
-                local optionInstances = {}
-
-                local defaultInContent = false
-
-                for i, v in next, contentTable do
-                    if v == default then
-                        defaultInContent = true
-                    end
-                end
-
-                default = defaultInContent and default or nil
-
-                local dropdown = utility.create("TextButton", {
-                    ZIndex = 6,
-                    Size = UDim2.new(1, 0, 0, 16),
-                    BackgroundColor3 = theme.Dropdown,
-                    FontSize = Enum.FontSize.Size12,
-                    TextSize = 12,
-                    TextColor3 = theme.TextColor,
-                    Text = "",
-                    Font = Enum.Font.Gotham,
-                    Parent = sectionContent
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = dropdown
-                })
-                
-                local value = utility.create("TextLabel", {
-                    ZIndex = 7,
-                    Size = UDim2.new(0, 0, 1, 0),
-                    BackgroundTransparency = 1,
-                    Position = UDim2.new(0, 5, 0, 0),
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    FontSize = Enum.FontSize.Size12,
-                    TextSize = 12,
-                    TextColor3 = default and theme.EnabledText or theme.DisabledText,
-                    Text = default or "NONE",
-                    Font = Enum.Font.Gotham,
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                    Parent = dropdown
-                })
-                
-                local icon = utility.create("ImageLabel", {
-                    ZIndex = 7,
-                    Size = UDim2.new(0, 10, 0, 11),
-                    Rotation = 180,
-                    BackgroundTransparency = 1,
-                    Position = UDim2.new(1, -16, 0, 3),
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    Image = "http://www.roblox.com/asset/?id=8233647312",
-                    Parent = dropdown
-                })
-                
-                local content = utility.create("Frame", {
-                    ZIndex = 10,
-                    Visible = false,
-                    Size = UDim2.new(1, 0, 0, 0),
-                    ClipsDescendants = true,
-                    Position = UDim2.new(0, 0, 1, 6),
-                    BackgroundColor3 = theme.DropdownContent,
-                    Parent = dropdown
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = content
-                })
-                
-                local contentHolder = utility.create("Frame", {
-                    Size = UDim2.new(1, -6, 1, 0),
-                    Position = UDim2.new(0, 6, 0, 0),
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    Parent = content
-                })
-                
-                local contentList = utility.create("UIListLayout", {
-                    SortOrder = Enum.SortOrder.LayoutOrder,
-                    Parent = contentHolder
-                })
-
-                local function toggleDropdown()
-                    open = not open
-                    local sizeX = UDim2.new(1, 0, 0, open and contentList.AbsoluteContentSize.Y or 0)
-                    local rotation = open and 0 or 180
-
-                    if open then
-                        content.Visible = open
-                    end
-
-                    utility.tween(content, {#contentTable * 0.1}, {Size = sizeX}, function() content.Visible = open end)
-                    utility.tween(icon, {0.2}, {Rotation = rotation})
-                end
-
-                dropdown.MouseButton1Click:connect(toggleDropdown)
-
-                dropdown.MouseEnter:Connect(function()
-                    utility.tween(dropdown, {0.2}, {BackgroundColor3 = theme.DropdownMouseOver})
-                end)
-
-                dropdown.MouseLeave:Connect(function()
-                    utility.tween(dropdown, {0.2}, {BackgroundColor3 = theme.Dropdown})
-                end)
-
-                for i, v in next, contentTable do
-                    local option = utility.create("TextButton", {
-                        ZIndex = 11,
-                        Size = UDim2.new(1, 0, 0, 16),
-                        BackgroundTransparency = 1,
-                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                        FontSize = Enum.FontSize.Size12,
-                        TextSize = 12,
-                        TextColor3 = v == default and theme.EnabledText or theme.DisabledText,
-                        Text = v,
-                        Font = Enum.Font.Gotham,
-                        TextXAlignment = Enum.TextXAlignment.Left,
-                        Parent = contentHolder
-                    })
-
-                    optionInstances[v] = option
-
-                    if v == default then
-                        if not multiChoice then
-                            if flag then
-                                library.flags[flag] = v
-                            end
-
-                            callback(v)
-                        else
-                            table.insert(chosen, v)
-
-                            if flag then
-                                library.flags[flag] = chosen
-                            end
-
-                            callback(chosen)
-                        end
-                    end
-
-                    option.MouseButton1Click:connect(function()
-                        if not multiChoice then
-                            if curValue ~= v then
-                                curValue = v
-
-                                for i2, v2 in next, contentHolder:GetChildren() do
-                                    if v2:IsA("TextButton") then
-                                        utility.tween(v2, {0.2}, {TextColor3 = theme.DisabledText})
-                                    end
-                                end
-
-                                utility.tween(option, {0.2}, {TextColor3 = theme.EnabledText})
-
-                                utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                                    value.TextColor3 = theme.EnabledText
-                                    value.Text = v
-                                    utility.tween(value, {0.2}, {TextTransparency = 0})
-                                end)
-
-                                if flag then
-                                    library.flags[flag] = v
-                                end
-                                callback(v)
-                            else
-                                curValue = nil
-                                utility.tween(option, {0.2}, {TextColor3 = theme.DisabledText})
-
-                                utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                                    value.TextColor3 = theme.DisabledText
-                                    value.Text = "NONE"
-                                    utility.tween(value, {0.2}, {TextTransparency = 0})
-                                end)
-
-                                if flag then
-                                    library.flags[flag] = nil
-                                end
-
-                                callback(nil)
-                            end
-                        else
-                            if table.find(chosen, v) then
-                                for i, v2 in next, chosen do
-                                    if v2 == v then
-                                        table.remove(chosen, i)
-                                    end
-                                end
-
-                                utility.tween(option, {0.2}, {TextColor3 = theme.DisabledText})
-
-                                utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                                    value.TextColor3 = table.concat(chosen) ~= "" and theme.EnabledText or theme.DisabledText
-                                    value.Text = table.concat(chosen) ~= "" and table.concat(chosen, ", ") or "NONE"
-                                    utility.tween(value, {0.2}, {TextTransparency = 0})
-                                end)
-
-                                if flag then
-                                    library.flags[flag] = chosen
-                                end
-
-                                callback(chosen)
-                            else
-                                table.insert(chosen, v)
-
-                                utility.tween(option, {0.2}, {TextColor3 = theme.EnabledText})
-
-                                utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                                    value.TextColor3 = table.concat(chosen) ~= "" and theme.EnabledText or theme.DisabledText
-                                    value.Text = table.concat(chosen) ~= "" and table.concat(chosen, ", ") or "NONE"
-                                    utility.tween(value, {0.2}, {TextTransparency = 0})
-                                end)
-
-                                if flag then
-                                    library.flags[flag] = chosen
-                                end
-
-                                callback(chosen)
-                            end
-                        end
-                    end)
-                end
-
-                local dropdownTypes = {}
-                dropdownTypes = utility.format_table(dropdownTypes)
-
-                function dropdownTypes:Set(opt)
-                    if opt ~= nil then
-                        if not multiChoice then
-                            local optionExists = false
-
-                            for i, v in next, contentTable do
-                                if v == opt then
-                                    optionExists = true
-                                end
-                            end
-        
-                            local option = optionInstances[opt]
-
-                            if optionExists then
-                                curValue = opt
-
-                                for i2, v2 in next, contentHolder:GetChildren() do
-                                    if v2:IsA("TextButton") then
-                                        v2.TextColor3 = theme.DisabledText
-                                    end
-                                end
-
-                                utility.tween(option, {0.2}, {TextColor3 = theme.EnabledText})
-
-                                utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                                    value.TextColor3 = theme.EnabledText
-                                    value.Text = opt
-                                    utility.tween(value, {0.2}, {TextTransparency = 0})
-                                end)
-
-                                if flag then
-                                    library.flags[flag] = opt
-                                end
-
-                                callback(opt)
-                            end
-                        else
-                            if typeof(opt) == "table" then
-                                chosen = opt
-
-                                for i,v in next, chosen do
-                                    utility.tween(optionInstances[v], {0.2}, {TextColor3 = theme.EnabledText})
-                                end
-                            else 
-                                if not table.find(chosen, opt) then
-                                    table.insert(chosen, opt)
-
-                                    utility.tween(optionInstances[opt], {0.2}, {TextColor3 = theme.EnabledText})
-                                end
-                            end
-
-                            utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                                value.TextColor3 = theme.EnabledText
-                                value.Text = table.concat(chosen, ", ")
-                                utility.tween(value, {0.2}, {TextTransparency = 0})
-                            end)
-
-                            if flag then
-                                library.flags[flag] = chosen
-                            end
-
-                            callback(chosen)
-                        end
-                    else
-                        if not multiChoice then
-                            curValue = nil
-                            for i2, v2 in next, contentHolder:GetChildren() do
-                                if v2:IsA("TextButton") then
-                                    utility.tween(v2, {0.2}, {TextColor3 = theme.DisabledText})
-                                end
-                            end
-
-                            utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                                value.TextColor3 = theme.DisabledText
-                                value.Text = "NONE"
-                                utility.tween(value, {0.2}, {TextTransparency = 0})
-                            end)
-
-                            if flag then
-                                library.flags[flag] = nil
-                            end
-
-                            callback(nil)
-                        else
-                            chosen = {}
-
-                            for i2, v2 in next, contentHolder:GetChildren() do
-                                if v2:IsA("TextButton") then
-                                    v2.TextColor3 = theme.DisabledText
-                                end
-                            end
-
-                            utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                                value.TextColor3 = theme.DisabledText
-                                value.Text = "NONE"
-                                utility.tween(value, {0.2}, {TextTransparency = 0})
-                            end)
-
-                            if flag then
-                                library.flags[flag] = chosen
-                            end
-
-                            callback(chosen)
-                        end
-                    end
-                end
-
-                function dropdownTypes:Add(opt)
-                    table.insert(contentTable, opt)
-
-                    local option = utility.create("TextButton", {
-                        ZIndex = 11,
-                        Size = UDim2.new(1, 0, 0, 16),
-                        BackgroundTransparency = 1,
-                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                        FontSize = Enum.FontSize.Size12,
-                        TextSize = 12,
-                        TextColor3 = theme.DisabledText,
-                        Text = opt,
-                        Font = Enum.Font.Gotham,
-                        TextXAlignment = Enum.TextXAlignment.Left,
-                        Parent = contentHolder
-                    })
-
-                    optionInstances[opt] = option
-
-                    option.MouseButton1Click:connect(function()
-                        if not multiChoice then
-                            if curValue ~= opt then
-                                curValue = opt
-
-                                for i, v in next, contentHolder:GetChildren() do
-                                    if v:IsA("TextButton") then
-                                        utility.tween(v, {0.2}, {TextColor3 = theme.DisabledText})
-                                    end
-                                end
-
-                                utility.tween(option, {0.2}, {TextColor3 = theme.EnabledText})
-
-                                utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                                    value.TextColor3 = theme.EnabledText
-                                    value.Text = opt
-                                    utility.tween(value, {0.2}, {TextTransparency = 0})
-                                end)
-
-                                if flag then
-                                    library.flags[flag] = opt
-                                end
-                                callback(opt)
-                            else
-                                curValue = nil
-                                utility.tween(option, {0.2}, {TextColor3 = theme.DisabledText})
-
-                                utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                                    value.TextColor3 = theme.DisabledText
-                                    value.Text = "NONE"
-                                    utility.tween(value, {0.2}, {TextTransparency = 0})
-                                end)
-
-                                if flag then
-                                    library.flags[flag] = nil
-                                end
-
-                                callback(nil)
-                            end
-                        else
-                            if table.find(chosen, opt) then
-                                for i, v in next, chosen do
-                                    if v == opt then
-                                        table.remove(chosen, i)
-                                    end
-                                end
-
-                                utility.tween(option, {0.2}, {TextColor3 = theme.DisabledText})
-
-                                utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                                    value.TextColor3 = table.concat(chosen) ~= "" and theme.EnabledText or theme.DisabledText
-                                    value.Text = table.concat(chosen) ~= "" and table.concat(chosen, ", ") or "NONE"
-                                    utility.tween(value, {0.2}, {TextTransparency = 0})
-                                end)
-
-                                if flag then
-                                    library.flags[flag] = chosen
-                                end
-
-                                callback(chosen)
-                            else
-                                table.insert(chosen, opt)
-
-                                utility.tween(option, {0.2}, {TextColor3 = theme.EnabledText})
-
-                                utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                                    value.TextColor3 = table.concat(chosen) ~= "" and theme.EnabledText or theme.DisabledText
-                                    value.Text = table.concat(chosen) ~= "" and table.concat(chosen, ", ") or "NONE"
-                                    utility.tween(value, {0.2}, {TextTransparency = 0})
-                                end)
-
-                                if flag then
-                                    library.flags[flag] = chosen
-                                end
-
-                                callback(chosen)
-                            end
-                        end
-                    end)
-
-                    if content.Visible then
-                        local sizeX = UDim2.new(1, 0, 0, contentList.AbsoluteContentSize.Y)
-                        utility.tween(content, {#contentTable * 0.1}, {Size = sizeX})
-                    end
-                end
-
-                function dropdownTypes:Remove(opt)
-                    if table.find(contentTable, opt) then
-                        utility.tween(optionInstances[opt], {0.2}, {TextTransparency = 1}, function()
-                            table.remove(contentTable, table.find(contentTable, opt))
-                            optionInstances[opt]:Destroy()
-                            table.remove(optionInstances, table.find(optionInstances, opt))
-                        end)
-
-                        table.remove(contentTable, table.find(contentTable, opt))
-
-                        if content.Visible then
-                            local sizeX = UDim2.new(1, 0, 0, contentList.AbsoluteContentSize.Y - 16)
-                            utility.tween(content, {#contentTable * 0.1}, {Size = sizeX})
-                        end
-
-                        if not multiChoice then
-                            if curValue == opt then
-                                curValue = nil
-                                utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                                    value.TextColor3 = theme.DisabledText
-                                    value.Text = "NONE"
-                                    utility.tween(value, {0.2}, {TextTransparency = 0})
-                                end)
-
-                                if flag then
-                                    library.flags[flag] = nil
-                                end
-                                
-                                callback(nil)
-                            end
-                        else
-                            if table.find(chosen, opt) then
-                                table.remove(chosen, table.find(chosen, opt))
-
-                                utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                                    value.TextColor3 = table.concat(chosen) ~= "" and theme.EnabledText or theme.DisabledText
-                                    value.Text = table.concat(chosen) ~= "" and table.concat(chosen, ", ") or "NONE"
-                                    utility.tween(value, {0.2}, {TextTransparency = 0})
-                                end)
-                            end
-                        end
-                    end
-                end
-
-                function dropdownTypes:Refresh(tbl)
-                    contentTable = tbl
-
-                    for i, v in next, optionInstances do
-                        v:Destroy()
-                    end
-                    
-                    utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                        value.TextColor3 = theme.DisabledText
-                        value.Text = "NONE"
-                        utility.tween(value, {0.2}, {TextTransparency = 0})
-                    end)
-
-                    for i, v in next, contentTable do
-                        local option = utility.create("TextButton", {
-                            ZIndex = 11,
-                            Size = UDim2.new(1, 0, 0, 16),
-                            BackgroundTransparency = 1,
-                            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                            FontSize = Enum.FontSize.Size12,
-                            TextSize = 12,
-                            TextColor3 = v == default and theme.EnabledText or theme.DisabledText,
-                            Text = v,
-                            Font = Enum.Font.Gotham,
-                            TextXAlignment = Enum.TextXAlignment.Left,
-                            Parent = contentHolder
-                        })
-    
-                        optionInstances[v] = option
-    
-                        if v == default then
-                            if not multiChoice then
-                                if flag then
-                                    library.flags[flag] = v
-                                end
-    
-                                callback(v)
-                            else
-                                table.insert(chosen, v)
-    
-                                if flag then
-                                    library.flags[flag] = chosen
-                                end
-    
-                                callback(chosen)
-                            end
-                        end
-    
-                        option.MouseButton1Click:connect(function()
-                            if not multiChoice then
-                                if curValue ~= v then
-                                    curValue = v
-    
-                                    for i2, v2 in next, contentHolder:GetChildren() do
-                                        if v2:IsA("TextButton") then
-                                            utility.tween(v2, {0.2}, {TextColor3 = theme.DisabledText})
-                                        end
-                                    end
-    
-                                    utility.tween(option, {0.2}, {TextColor3 = theme.EnabledText})
-    
-                                    utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                                        value.TextColor3 = theme.EnabledText
-                                        value.Text = v
-                                        utility.tween(value, {0.2}, {TextTransparency = 0})
-                                    end)
-    
-                                    if flag then
-                                        library.flags[flag] = v
-                                    end
-                                    callback(v)
-                                else
-                                    curValue = nil
-                                    utility.tween(option, {0.2}, {TextColor3 = theme.DisabledText})
-    
-                                    utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                                        value.TextColor3 = theme.DisabledText
-                                        value.Text = "NONE"
-                                        utility.tween(value, {0.2}, {TextTransparency = 0})
-                                    end)
-    
-                                    if flag then
-                                        library.flags[flag] = nil
-                                    end
-    
-                                    callback(nil)
-                                end
-                            else
-                                if table.find(chosen, v) then
-                                    for i, v2 in next, chosen do
-                                        if v2 == v then
-                                            table.remove(chosen, i)
-                                        end
-                                    end
-    
-                                    utility.tween(option, {0.2}, {TextColor3 = theme.DisabledText})
-    
-                                    utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                                        value.TextColor3 = table.concat(chosen) ~= "" and theme.EnabledText or theme.DisabledText
-                                        value.Text = table.concat(chosen) ~= "" and table.concat(chosen, ", ") or "NONE"
-                                        utility.tween(value, {0.2}, {TextTransparency = 0})
-                                    end)
-    
-                                    if flag then
-                                        library.flags[flag] = chosen
-                                    end
-    
-                                    callback(chosen)
-                                else
-                                    table.insert(chosen, v)
-    
-                                    utility.tween(option, {0.2}, {TextColor3 = theme.EnabledText})
-    
-                                    utility.tween(value, {0.2}, {TextTransparency = 1}, function()
-                                        value.TextColor3 = table.concat(chosen) ~= "" and theme.EnabledText or theme.DisabledText
-                                        value.Text = table.concat(chosen) ~= "" and table.concat(chosen, ", ") or "NONE"
-                                        utility.tween(value, {0.2}, {TextTransparency = 0})
-                                    end)
-    
-                                    if flag then
-                                        library.flags[flag] = chosen
-                                    end
-    
-                                    callback(chosen)
-                                end
-                            end
-                        end)
-                    end
-
-                    if content.Visible then
-                        local sizeX = UDim2.new(1, 0, 0, contentList.AbsoluteContentSize.Y)
-                        utility.tween(content, {#contentTable * 0.1}, {Size = sizeX})
-                    end
-                end
-                
-                function dropdownTypes:Hide()
-                    dropdown.Visible = false
-                end
-                
-                function dropdownTypes:Show()
-                    dropdown.Visible = true
-                end
-                
-                return dropdownTypes
-            end
-
-            function sectionTypes:Keybind(opts)
-                local options = utility.format_table(opts)
-                local name = options.name
-                local default = options.default
-                local flag = options.flag or nil
-                local callback = options.callback or function() end
-
-                local keyChosen = default
-
-                if flag then
-                    library.flags[flag] = default
-                end
-
-                local keys = {
-                    [Enum.KeyCode.LeftShift] = "L-SHIFT";
-                    [Enum.KeyCode.RightShift] = "R-SHIFT";
-                    [Enum.KeyCode.LeftControl] = "L-CTRL";
-                    [Enum.KeyCode.RightControl] = "R-CTRL";
-                    [Enum.KeyCode.LeftAlt] = "L-ALT";
-                    [Enum.KeyCode.RightAlt] = "R-ALT";
-                    [Enum.KeyCode.CapsLock] = "CAPSLOCK";
-                    [Enum.KeyCode.One] = "1";
-                    [Enum.KeyCode.Two] = "2";
-                    [Enum.KeyCode.Three] = "3";
-                    [Enum.KeyCode.Four] = "4";
-                    [Enum.KeyCode.Five] = "5";
-                    [Enum.KeyCode.Six] = "6";
-                    [Enum.KeyCode.Seven] = "7";
-                    [Enum.KeyCode.Eight] = "8";
-                    [Enum.KeyCode.Nine] = "9";
-                    [Enum.KeyCode.Zero] = "0";
-                    [Enum.KeyCode.KeypadOne] = "NUM-1";
-                    [Enum.KeyCode.KeypadTwo] = "NUM-2";
-                    [Enum.KeyCode.KeypadThree] = "NUM-3";
-                    [Enum.KeyCode.KeypadFour] = "NUM-4";
-                    [Enum.KeyCode.KeypadFive] = "NUM-5";
-                    [Enum.KeyCode.KeypadSix] = "NUM-6";
-                    [Enum.KeyCode.KeypadSeven] = "NUM-7";
-                    [Enum.KeyCode.KeypadEight] = "NUM-8";
-                    [Enum.KeyCode.KeypadNine] = "NUM-9";
-                    [Enum.KeyCode.KeypadZero] = "NUM-0";
-                    [Enum.KeyCode.Minus] = "-";
-                    [Enum.KeyCode.Equals] = "=";
-                    [Enum.KeyCode.Tilde] = "~";
-                    [Enum.KeyCode.LeftBracket] = "[";
-                    [Enum.KeyCode.RightBracket] = "]";
-                    [Enum.KeyCode.RightParenthesis] = ")";
-                    [Enum.KeyCode.LeftParenthesis] = "(";
-                    [Enum.KeyCode.Semicolon] = ";";
-                    [Enum.KeyCode.Quote] = "'";
-                    [Enum.KeyCode.BackSlash] = "\\";
-                    [Enum.KeyCode.Comma] = ";";
-                    [Enum.KeyCode.Period] = ".";
-                    [Enum.KeyCode.Slash] = "/";
-                    [Enum.KeyCode.Asterisk] = "*";
-                    [Enum.KeyCode.Plus] = "+";
-                    [Enum.KeyCode.Period] = ".";
-                    [Enum.KeyCode.Backquote] = "`";
-                    [Enum.UserInputType.MouseButton1] = "MOUSE-1";
-                    [Enum.UserInputType.MouseButton2] = "MOUSE-2";
-                    [Enum.UserInputType.MouseButton3] = "MOUSE-3"
-                }
-
-                local keybind = utility.create("TextButton", {
-                    ZIndex = 6,
-                    Size = UDim2.new(1, 0, 0, 10),
-                    BackgroundTransparency = 1,
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    FontSize = Enum.FontSize.Size12,
-                    TextSize = 12,
-                    TextColor3 = theme.TextColor,
-                    Text = "Keybind",
-                    Font = Enum.Font.Gotham,
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                    Parent = sectionContent
-                })
-                
-                local value = utility.create("TextLabel", {
-                    ZIndex = 6,
-                    Size = UDim2.new(0, 1, 0, 10),
-                    BackgroundTransparency = 1,
-                    Position = UDim2.new(1, -1, 0, 0),
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    FontSize = Enum.FontSize.Size12,
-                    TextSize = 12,
-                    TextColor3 = default and theme.EnabledText or theme.DisabledText,
-                    Text = default and (keys[default] or tostring(default):gsub("Enum.KeyCode.", "")) or "NONE",
-                    Font = Enum.Font.Gotham,
-                    TextXAlignment = Enum.TextXAlignment.Right,
-                    Parent = keybind
-                })
-
-                keybind.MouseButton1Click:Connect(function()
-                    value.Text = "..."
-                    utility.tween(value, {0.2}, {TextColor3 = theme.DisabledText})
-
-                    local binding
-                    binding = inputService.InputBegan:Connect(function(input)
-                        local key = keys[input.KeyCode] or keys[input.UserInputType]
-                        value.Text = (keys[key] or tostring(input.KeyCode):gsub("Enum.KeyCode.", ""))
-                        utility.tween(value, {0.2}, {TextColor3 = theme.EnabledText})
-
-                        if input.UserInputType == Enum.UserInputType.Keyboard then
-                            keyChosen = input.KeyCode
-
-                            if flag then
-                                library.flags[flag] = input.KeyCode
-                            end
-
-                            callback(input.KeyCode)
-                            binding:Disconnect()
-                        else
-                            keyChosen = input.UserInputType
-
-                            if flag then
-                                library.flags[flag] = input.UserInputType
-                            end
-
-                            callback(input.UserInputType)
-                            binding:Disconnect()
-                        end
-                    end)
-                end)
-
-                inputService.InputBegan:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.Keyboard then
-                        if input.KeyCode == keyChosen then
-                            callback(keyChosen)
-                        end
-                    else
-                        if input.UserInputType == keyChosen then
-                            callback(keyChosen)
-                        end
-                    end
-                end)
-
-                local keybindTypes = {}
-                keybindTypes = utility.format_table(keybindTypes)
-
-                function keybindTypes:Set(newKey)
-                    local key = keys[newKey]
-                    value.Text = (keys[key] or tostring(newKey):gsub("Enum.KeyCode.", ""))
-                    utility.tween(value, {0.2}, {TextColor3 = theme.EnabledText})
-
-                    keyChosen = newKey
-
-                    if flag then
-                        library.flags[flag] = newKey
-                    end
-                    
-                    callback(newKey)
-                end
-                
-                function keybindTypes:Hide()
-                    keybind.Visible = false
-                end
-                
-                function keybindTypes:Show()
-                    keybind.Visible = true
-                end
-                
-                return keybindTypes
-            end
-
-            function sectionTypes:ToggleKeybind(opts)
-                local options = utility.format_table(opts)
-                local name = options.name
-                local default = options.default
-                local keybindFlag = options.keybindFlag or nil
-                local toggleFlag = options.toggleFlag or nil
-                local keybindCallback = options.keybindCallback or function() end
-                local toggleCallback = options.toggleCallback or function() end
-
-                local keyChosen = default
-                local mouseOver = false
-                local toggled = false
-
-                if keybindFlag then
-                    library.flags[keybindFlag] = default
-                end
-
-                local keys = {
-                    [Enum.KeyCode.LeftShift] = "L-SHIFT";
-                    [Enum.KeyCode.RightShift] = "R-SHIFT";
-                    [Enum.KeyCode.LeftControl] = "L-CTRL";
-                    [Enum.KeyCode.RightControl] = "R-CTRL";
-                    [Enum.KeyCode.LeftAlt] = "L-ALT";
-                    [Enum.KeyCode.RightAlt] = "R-ALT";
-                    [Enum.KeyCode.CapsLock] = "CAPSLOCK";
-                    [Enum.KeyCode.One] = "1";
-                    [Enum.KeyCode.Two] = "2";
-                    [Enum.KeyCode.Three] = "3";
-                    [Enum.KeyCode.Four] = "4";
-                    [Enum.KeyCode.Five] = "5";
-                    [Enum.KeyCode.Six] = "6";
-                    [Enum.KeyCode.Seven] = "7";
-                    [Enum.KeyCode.Eight] = "8";
-                    [Enum.KeyCode.Nine] = "9";
-                    [Enum.KeyCode.Zero] = "0";
-                    [Enum.KeyCode.KeypadOne] = "NUM-1";
-                    [Enum.KeyCode.KeypadTwo] = "NUM-2";
-                    [Enum.KeyCode.KeypadThree] = "NUM-3";
-                    [Enum.KeyCode.KeypadFour] = "NUM-4";
-                    [Enum.KeyCode.KeypadFive] = "NUM-5";
-                    [Enum.KeyCode.KeypadSix] = "NUM-6";
-                    [Enum.KeyCode.KeypadSeven] = "NUM-7";
-                    [Enum.KeyCode.KeypadEight] = "NUM-8";
-                    [Enum.KeyCode.KeypadNine] = "NUM-9";
-                    [Enum.KeyCode.KeypadZero] = "NUM-0";
-                    [Enum.KeyCode.Minus] = "-";
-                    [Enum.KeyCode.Equals] = "=";
-                    [Enum.KeyCode.Tilde] = "~";
-                    [Enum.KeyCode.LeftBracket] = "[";
-                    [Enum.KeyCode.RightBracket] = "]";
-                    [Enum.KeyCode.RightParenthesis] = ")";
-                    [Enum.KeyCode.LeftParenthesis] = "(";
-                    [Enum.KeyCode.Semicolon] = ";";
-                    [Enum.KeyCode.Quote] = "'";
-                    [Enum.KeyCode.BackSlash] = "\\";
-                    [Enum.KeyCode.Comma] = ";";
-                    [Enum.KeyCode.Period] = ".";
-                    [Enum.KeyCode.Slash] = "/";
-                    [Enum.KeyCode.Asterisk] = "*";
-                    [Enum.KeyCode.Plus] = "+";
-                    [Enum.KeyCode.Period] = ".";
-                    [Enum.KeyCode.Backquote] = "`";
-                    [Enum.UserInputType.MouseButton1] = "MOUSE-1";
-                    [Enum.UserInputType.MouseButton2] = "MOUSE-2";
-                    [Enum.UserInputType.MouseButton3] = "MOUSE-3"
-                }
-
-                local toggleKeybind = utility.create("TextButton", {
-                    Size = UDim2.new(1, 0, 0, 10),
-                    BackgroundTransparency = 1,
-                    Parent = sectionContent
-                })
-
-                local icon = utility.create("Frame", {
-                    ZIndex = 6,
-                    Size = UDim2.new(0, 10, 0, 10),
-                    BackgroundColor3 = theme.ToggleDisabled,
-                    Parent = toggleKeybind
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 0),
-                    Parent = icon
-                })
-                
-                local title = utility.create("TextLabel", {
-                    ZIndex = 6,
-                    Size = UDim2.new(0, 1, 0, 10),
-                    BackgroundTransparency = 1,
-                    Position = UDim2.new(1, 5, 0, 0),
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    FontSize = Enum.FontSize.Size12,
-                    TextSize = 12,
-                    TextColor3 = theme.DisabledText,
-                    Text = name,
-                    Font = Enum.Font.Gotham,
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                    Parent = icon
-                })
-                
-                local value = utility.create("TextButton", {
-                    ZIndex = 6,
-                    Size = UDim2.new(0, 1, 0, 10),
-                    BackgroundTransparency = 1,
-                    Position = UDim2.new(1, -1, 0, 0),
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    FontSize = Enum.FontSize.Size12,
-                    TextSize = 12,
-                    TextColor3 = default and theme.EnabledText or theme.DisabledText,
-                    Text = default and (keys[default] or tostring(default):gsub("Enum.KeyCode.", "")) or "NONE",
-                    Font = Enum.Font.Gotham,
-                    TextXAlignment = Enum.TextXAlignment.Right,
-                    Parent = toggleKeybind
-                })
-
-                value.Size = UDim2.new(0, value.TextBounds.X, 0, 10)
-                value.Position = UDim2.new(1, -(value.TextBounds.X), 0, 0)
-
-                local function toggleToggle()
-                    toggled = not toggled
-
-                    utility.tween(title, {0.2}, {TextColor3 = toggled and theme.EnabledText or theme.DisabledText})
-
-                    if not mouseOver then
-                        utility.tween(icon, {0.2}, {BackgroundColor3 = toggled and theme.ToggleEnabled or theme.ToggleDisabled})
-                    else
-                        utility.tween(icon, {0.2}, {BackgroundColor3 = toggled and theme.ToggleEnabledMouseOver or theme.ToggleDisabledMouseOver})
-                    end
-
-                    toggleCallback(toggled)
-                    if toggleFlag then
-                        library.flags[toggleFlag] = toggled
-                    end
-                end
-
-                toggleKeybind.MouseButton1Click:connect(toggleToggle)
-
-                toggleKeybind.MouseEnter:Connect(function()
-                    mouseOver = true
-                    utility.tween(icon, {0.2}, {BackgroundColor3 = toggled and theme.ToggleEnabledMouseOver or theme.ToggleDisabledMouseOver})
-                end)
-
-                toggleKeybind.MouseLeave:Connect(function()
-                    mouseOver = false
-                    utility.tween(icon, {0.2}, {BackgroundColor3 = toggled and theme.ToggleEnabled or theme.ToggleDisabled})
-                end)
-
-                value.MouseButton1Click:Connect(function()
-                    value.Text = "..."
-                    utility.tween(value, {0.2}, {TextColor3 = theme.DisabledText})
-
-                    local binding
-                    binding = inputService.InputBegan:Connect(function(input)
-                        local key = keys[input.KeyCode] or keys[input.UserInputType]
-                        value.Text = key or (tostring(input.KeyCode):gsub("Enum.KeyCode.", ""))
-                        value.Size = UDim2.new(0, value.TextBounds.X, 0, 10)
-                        value.Position = UDim2.new(1, -(value.TextBounds.X), 0, 0)
-                        utility.tween(value, {0.2}, {TextColor3 = theme.EnabledText})
-
-                        if input.UserInputType == Enum.UserInputType.Keyboard then
-                            keyChosen = input.KeyCode
-
-                            if keybindFlag then
-                                library.flags[keybindFlag] = input.KeyCode
-                            end
-
-                            keybindCallback(input.KeyCode)
-                            binding:Disconnect()
-                        else
-                            keyChosen = input.UserInputType
-
-                            if keybindFlag then
-                                library.flags[keybindFlag] = input.UserInputType
-                            end
-
-                            keybindCallback(input.UserInputType)
-                            binding:Disconnect()
-                        end
-                    end)
-                end)
-
-                inputService.InputBegan:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.Keyboard then
-                        if input.KeyCode == keyChosen then
-                            toggleToggle()
-                            keybindCallback(keyChosen)
-                        end
-                    else
-                        if input.UserInputType == keyChosen then
-                            toggleToggle()
-                            keybindCallback(keyChosen)
-                        end
-                    end
-                end)
-
-                local toggleKeybindTypes = {}
-                toggleKeybindTypes = utility.format_table(toggleKeybindTypes)
-
-                function toggleKeybindTypes:Toggle(bool)
-                    if toggled ~= bool then
-                        toggleToggle()
-                    end
-                end
-
-                function toggleKeybindTypes:Set(newKey)
-                    local key = keys[newKey]
-                    value.Text = (keys[key] or tostring(newKey):gsub("Enum.KeyCode.", ""))
-                    utility.tween(value, {0.2}, {TextColor3 = theme.EnabledText})
-
-                    keyChosen = newKey
-
-                    if keybindFlag then
-                        library.flags[keybindFlag] = newKey
-                    end
-                    
-                    keybindCallback(newKey)
-                end
-                
-                function toggleKeybindTypes:Hide()
-                    toggleKeybind.Visible = false
-                end
-                
-                function toggleKeybindTypes:Show()
-                    toggleKeybind.Visible = true
-                end
-                
-                return toggleKeybindTypes
-            end
-
-            function sectionTypes:ColorPicker(opts)
-                local options = utility.format_table(opts)
-                local name = options.name
-                local default = options.default
-                local flag = options.flag or nil
-                local callback = options.callback or function() end
-
-                local open = false
-                local hue, sat, val = default:ToHSV()
-
-                local slidingHue
-                local slidingSaturation
-
-                local hsv = Color3.fromHSV(hue, sat, val)
-
-                if flag then
-                    library.flags[flag] = default
-                end
-
-                local colorPicker = utility.create("TextButton", {
-                    ZIndex = 6,
-                    Size = UDim2.new(1, 0, 0, 10),
-                    BackgroundTransparency = 1,
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    FontSize = Enum.FontSize.Size12,
-                    TextSize = 12,
-                    TextColor3 = theme.TextColor,
-                    Text = name,
-                    Font = Enum.Font.Gotham,
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                    Parent = sectionContent
-                })
-                
-                local icon = utility.create("Frame", {
-                    ZIndex = 6,
-                    Size = UDim2.new(0, 10, 0, 10),
-                    Position = UDim2.new(1, -10, 0, 0),
-                    BackgroundColor3 = default,
-                    Parent = colorPicker
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 0),
-                    Parent = icon
-                })
-                
-                local picker = utility.create("Frame", {
-                    ZIndex = 12,
-                    Size = UDim2.new(1, -8, 0, 0),
-                    ClipsDescendants = true,
-                    Visible = false,
-                    Position = UDim2.new(0, 12, 1, 6),
-                    BackgroundColor3 = theme.ColorPicker,
-                    Parent = colorPicker
-                })
-
-                picker.Size = UDim2.new(1, -8, 0, picker.AbsoluteSize.X + 24)
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = picker
-                })
-                
-                local saturation = utility.create("ImageLabel", {
-                    ZIndex = 13,
-                    Size = UDim2.new(1, -29, 0, picker.AbsoluteSize.X - 29),
-                    Position = UDim2.new(0, 5, 0, 5),
-                    BackgroundColor3 = Color3.fromHSV(hue, sat, val),
-                    Image = "http://www.roblox.com/asset/?id=8630797271",
-                    Parent = picker
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = saturation
-                })
-                
-                local saturationPicker = utility.create("Frame", {
-                    ZIndex = 15,
-                    Size = UDim2.new(0, 4, 0, 4),
-                    Position = UDim2.new(0, (math.clamp(sat * saturation.AbsoluteSize.X, 0, saturation.AbsoluteSize.X - 4)), 0, (math.clamp((1 - val) * saturation.AbsoluteSize.Y, 0, saturation.AbsoluteSize.Y - 4))),
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    Parent = saturation
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = saturationPicker
-                })
-                
-                local outline = utility.create("Frame", {
-                    ZIndex = 14,
-                    Size = UDim2.new(1, 2, 1, 2),
-                    Position = UDim2.new(0, -1, 0, -1),
-                    BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-                    Parent = saturationPicker
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = outline
-                })
-                
-                local hueFrame = utility.create("ImageLabel", {
-                    ZIndex = 13,
-                    Size = UDim2.new(0, 14, 0, picker.AbsoluteSize.X - 29),
-                    ClipsDescendants = true,
-                    BackgroundTransparency = 1,
-                    Position = UDim2.new(1, -19, 0, 5),
-                    BackgroundColor3 = Color3.fromRGB(255, 0, 4),
-                    ScaleType = Enum.ScaleType.Crop,
-                    Image = "http://www.roblox.com/asset/?id=8630799159",
-                    Parent = picker
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 4),
-                    Parent = hueFrame
-                })
-                
-                local huePicker = utility.create("Frame", {
-                    ZIndex = 15,
-                    Size = UDim2.new(1, 0, 0, 2),
-                    Position = UDim2.new(0, 0, 0, math.clamp((1 - hue) * hueFrame.AbsoluteSize.Y, 0, hueFrame.AbsoluteSize.Y - 4)),
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    Parent = hueFrame
-                })
-                
-                local outline = utility.create("Frame", {
-                    ZIndex = 14,
-                    Size = UDim2.new(1, 2, 1, 2),
-                    Position = UDim2.new(0, -1, 0, -1),
-                    BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-                    Parent = huePicker
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = outline
-                })
-                
-                local rgb = utility.create("TextBox", {
-                    ZIndex = 14,
-                    Size = UDim2.new(1, -10, 0, 16),
-                    Position = UDim2.new(0, 5, 0, picker.AbsoluteSize.Y - 42),
-                    BackgroundColor3 = theme.ColorPickerBoxes,
-                    PlaceholderColor3 = Color3.fromRGB(180, 180, 180),
-                    FontSize = Enum.FontSize.Size12,
-                    TextSize = 12,
-                    TextColor3 = theme.TextColor,
-                    Text = tostring(math.floor(default.R * 255)) .. ", " .. tostring(math.floor(default.G * 255)) .. ", " .. tostring(math.floor(default.B * 255)),
-                    ClearTextOnFocus = false,
-                    Font = Enum.Font.Gotham,
-                    PlaceholderText = "R,  G,  B",
-                    Parent = picker
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = rgb
-                })
-                
-                local hex = utility.create("TextBox", {
-                    ZIndex = 14,
-                    Size = UDim2.new(1, -10, 0, 16),
-                    Position = UDim2.new(0, 5, 0, picker.AbsoluteSize.Y - 21),
-                    BackgroundColor3 = theme.ColorPickerBoxes,
-                    PlaceholderColor3 = Color3.fromRGB(180, 180, 180),
-                    FontSize = Enum.FontSize.Size12,
-                    TextSize = 12,
-                    TextColor3 = theme.TextColor,
-                    Text = utility.rgb_to_hex(default),
-                    ClearTextOnFocus = false,
-                    Font = Enum.Font.Gotham,
-                    PlaceholderText = "#FFFFFF",
-                    Parent = picker
-                })
-
-                picker.Size = UDim2.new(1, -8, 0, 0)
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = hex
-                })
-
-                local function openPicker()
-                    open = not open
-
-                    if open then
-                        picker.Visible = open
-                    end
-
-                    utility.tween(picker, {0.5}, {Size = open and UDim2.new(1, -8, 0, picker.AbsoluteSize.X + 24) or UDim2.new(1, -8, 0, 0)}, function() picker.Visible = open end)
-                end
-
-                colorPicker.MouseButton1Click:connect(openPicker)
-
-                local function updateHue(input)
-                    local sizeY = 1 - math.clamp((input.Position.Y - hueFrame.AbsolutePosition.Y) / hueFrame.AbsoluteSize.Y, 0, 1)
-                    local posY = math.clamp(((input.Position.Y - hueFrame.AbsolutePosition.Y) / hueFrame.AbsoluteSize.Y) * hueFrame.AbsoluteSize.Y, 0, hueFrame.AbsoluteSize.Y - 2)
-                    utility.tween(huePicker, {0.1}, {Position = UDim2.new(0, 0, 0, posY)})
-
-                    hue = sizeY
-
-                    rgb.Text = math.floor((hsv.r * 255) + 0.5) .. ", " .. math.floor((hsv.g * 255) + 0.5) .. ", " .. math.floor((hsv.b * 255) + 0.5)
-                    hex.Text = utility.rgb_to_hex(Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255))
-
-                    hsv = Color3.fromHSV(hue, sat, val)
-                    saturation.BackgroundColor3 = hsv
-                    icon.BackgroundColor3 = hsv
-
-                    if flag then 
-                        library.flags[flag] = Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255)
-                    end
-
-                    callback(Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255))
-                end
-
-                hueFrame.InputBegan:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        slidingHue = true
-                        updateHue(input)
-                    end
-                end)
-
-                hueFrame.InputEnded:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        slidingHue = false
-                    end
-                end)
-
-                inputService.InputChanged:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        if slidingHue then
-                            updateHue(input)
-                        end
-                    end
-                end)
-
-                local function updateSatVal(input)
-                    local sizeX = math.clamp((input.Position.X - saturation.AbsolutePosition.X) / saturation.AbsoluteSize.X, 0, 1)
-                    local sizeY = 1 - math.clamp((input.Position.Y - saturation.AbsolutePosition.Y) / saturation.AbsoluteSize.Y, 0, 1)
-                    local posY = math.clamp(((input.Position.Y - saturation.AbsolutePosition.Y) / saturation.AbsoluteSize.Y) * saturation.AbsoluteSize.Y, 0, saturation.AbsoluteSize.Y - 4)
-                    local posX = math.clamp(((input.Position.X - saturation.AbsolutePosition.X) / saturation.AbsoluteSize.X) * saturation.AbsoluteSize.X, 0, saturation.AbsoluteSize.X - 4)
-
-                    utility.tween(saturationPicker, {0.1}, {Position = UDim2.new(0, posX, 0, posY)})
-
-                    sat = sizeX
-                    val = sizeY
-
-                    hsv = Color3.fromHSV(hue, sat, val)
-
-                    rgb.Text = math.floor((hsv.r * 255) + 0.5) .. ", " .. math.floor((hsv.g * 255) + 0.5) .. ", " .. math.floor((hsv.b * 255) + 0.5)
-                    hex.Text = utility.rgb_to_hex(Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255))
-
-                    saturation.BackgroundColor3 = hsv
-                    icon.BackgroundColor3 = hsv
-
-                    if flag then 
-                        library.flags[flag] = Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255)
-                    end
-
-                    callback(Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255))
-                end
-
-                saturation.InputBegan:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        slidingSaturation = true
-                        updateSatVal(input)
-                    end
-                end)
-
-                saturation.InputEnded:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        slidingSaturation = false
-                    end
-                end)
-
-                inputService.InputChanged:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        if slidingSaturation then
-                            updateSatVal(input)
-                        end
-                    end
-                end)
-
-                local colorPickerTypes = {}
-                colorPickerTypes = utility.format_table(colorPickerTypes)
-
-                function colorPickerTypes:SetRGB(color)
-                    hue, sat, val = color:ToHSV()
-                    hsv = Color3.fromHSV(hue, sat, val)
-
-                    saturation.BackgroundColor3 = hsv
-                    icon.BackgroundColor3 = hsv
-                    saturationPicker.Position = UDim2.new(0, (math.clamp(sat * saturation.AbsoluteSize.X, 0, saturation.AbsoluteSize.X - 4)), 0, (math.clamp((1 - val) * saturation.AbsoluteSize.Y, 0, saturation.AbsoluteSize.Y - 4)))
-                    huePicker.Position = UDim2.new(0, 0, 0, math.clamp((1 - hue) * hueFrame.AbsoluteSize.Y, 0, hueFrame.AbsoluteSize.Y - 4))
-
-                    rgb.Text = math.floor((hsv.r * 255) + 0.5) .. ", " .. math.floor((hsv.g * 255) + 0.5) .. ", " .. math.floor((hsv.b * 255) + 0.5)
-                    hex.Text = utility.rgb_to_hex(Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255))
-
-                    if flag then 
-                        library.flags[flag] = Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255)
-                    end
-
-                    callback(Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255))
-                end
-
-                function colorPickerTypes:SetHex(hex)
-                    color = utility.hex_to_rgb(hex)
-                    
-                    hue, sat, val = color:ToHSV()
-                    hsv = Color3.fromHSV(hue, sat, val)
-
-                    saturation.BackgroundColor3 = hsv
-                    icon.BackgroundColor3 = hsv
-                    saturationPicker.Position = UDim2.new(0, (math.clamp(sat * saturation.AbsoluteSize.X, 0, saturation.AbsoluteSize.X - 4)), 0, (math.clamp((1 - val) * saturation.AbsoluteSize.Y, 0, saturation.AbsoluteSize.Y - 4)))
-                    huePicker.Position = UDim2.new(0, 0, 0, math.clamp((1 - hue) * hueFrame.AbsoluteSize.Y, 0, hueFrame.AbsoluteSize.Y - 4))
-
-                    if flag then 
-                        library.flags[flag] = Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255)
-                    end
-
-                    callback(Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255))
-                end
-
-                rgb.FocusLost:Connect(function()
-                    local _, amount = rgb.Text:gsub(", ", "")
-                    if amount == 2 then
-                        local values = rgb.Text:split(", ")
-                        local r, g, b = math.clamp(values[1], 0, 255), math.clamp(values[2], 0, 255), math.clamp(values[3], 0, 255)
-                        colorPickerTypes:SetRGB(Color3.fromRGB(r, g, b))
-                    else
-                        rgb.Text = math.floor((hsv.r * 255) + 0.5) .. ", " .. math.floor((hsv.g * 255) + 0.5) .. ", " .. math.floor((hsv.b * 255) + 0.5)
-                    end
-                end)
-                    
-                hex.FocusLost:Connect(function()
-                    if hex.Text:find("#") and hex.Text:len() == 7 then
-                        colorPickerTypes:SetHex(hex.Text)
-                    else
-                        hex.Text = utility.rgb_to_hex(Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255))
-                    end
-                end)
-
-                hex:GetPropertyChangedSignal("Text"):Connect(function()
-                    if hex.Text == "" then
-                        hex.Text = "#"
-                    end
-                end)
-                
-                function colorPickerTypes:Hide()
-                    colorPicker.Visible = false
-                end
-                
-                function colorPickerTypes:Show()
-                    colorPicker.Visible = true
-                end
-                
-                return colorPickerTypes
-            end
-
-            function sectionTypes:ToggleColorPicker(opts)
-                local options = utility.format_table(opts)
-                local name = options.name
-                local default = options.default
-                local colorPickerFlag = options.colorPickerFlag or nil
-                local toggleFlag = options.toggleFlag or nil
-                local colorPickerCallback = options.colorPickerCallback or function() end
-                local toggleCallback = options.toggleCallback or function() end
-
-                local open = false
-                local hue, sat, val = default:ToHSV()
-
-                local slidingHue
-                local slidingSaturation
-
-                local hsv = Color3.fromHSV(hue, sat, val)
-
-                if colorPickerFlag then
-                    library.flags[colorPickerFlag] = default
-                end
-
-                local toggled = false
-                local mouseOver = false
-
-                local toggleColorPicker = utility.create("TextButton", {
-                    Size = UDim2.new(1, 0, 0, 10),
-                    BackgroundTransparency = 1,
-                    FontSize = Enum.FontSize.Size14,
-                    TextSize = 14,
-                    Text = "",
-                    Font = Enum.Font.SourceSans,
-                    Parent = sectionContent
-                })
-
-                local icon = utility.create("Frame", {
-                    ZIndex = 6,
-                    Size = UDim2.new(0, 10, 0, 10),
-                    BackgroundColor3 = theme.ToggleDisabled,
-                    Parent = toggleColorPicker
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 0),
-                    Parent = icon
-                })
-                
-                local title = utility.create("TextLabel", {
-                    ZIndex = 6,
-                    Size = UDim2.new(0, 1, 0, 10),
-                    BackgroundTransparency = 1,
-                    Position = UDim2.new(1, 5, 0, 0),
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    FontSize = Enum.FontSize.Size12,
-                    TextSize = 12,
-                    TextColor3 = theme.DisabledText,
-                    Text = name,
-                    Font = Enum.Font.Gotham,
-                    TextXAlignment = Enum.TextXAlignment.Left,
-                    Parent = icon
-                })
-
-                local function toggleToggle()
-                    toggled = not toggled
-
-                    utility.tween(title, {0.2}, {TextColor3 = toggled and theme.EnabledText or theme.DisabledText})
-
-                    if not mouseOver then
-                        utility.tween(icon, {0.2}, {BackgroundColor3 = toggled and theme.ToggleEnabled or theme.ToggleDisabled})
-                    else
-                        utility.tween(icon, {0.2}, {BackgroundColor3 = toggled and theme.ToggleEnabledMouseOver or theme.ToggleDisabledMouseOver})
-                    end
-
-                    toggleCallback(toggled)
-                    if toggleFlag then
-                        library.flags[toggleFlag] = toggled
-                    end
-                end
-
-                toggleColorPicker.MouseButton1Click:connect(toggleToggle)
-
-                toggleColorPicker.MouseEnter:Connect(function()
-                    mouseOver = true
-                    utility.tween(icon, {0.2}, {BackgroundColor3 = toggled and theme.ToggleEnabledMouseOver or theme.ToggleDisabledMouseOver})
-                end)
-
-                toggleColorPicker.MouseLeave:Connect(function()
-                    mouseOver = false
-                    utility.tween(icon, {0.2}, {BackgroundColor3 = toggled and theme.ToggleEnabled or theme.ToggleDisabled})
-                end)
-
-                local colorPickerIcon = utility.create("TextButton", {
-                    ZIndex = 6,
-                    Size = UDim2.new(0, 10, 0, 10),
-                    Position = UDim2.new(1, -10, 0, 0),
-                    BackgroundColor3 = default,
-                    Text = "",
-                    Parent = toggleColorPicker
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 0),
-                    Parent = colorPickerIcon
-                })
-                
-                local picker = utility.create("Frame", {
-                    ZIndex = 12,
-                    Size = UDim2.new(1, -8, 0, 0),
-                    ClipsDescendants = true,
-                    Visible = false,
-                    Position = UDim2.new(0, 12, 1, 6),
-                    BackgroundColor3 = theme.ColorPicker,
-                    Parent = toggleColorPicker
-                })
-                
-                picker.Size = UDim2.new(1, -8, 0, picker.AbsoluteSize.X + 24)
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = picker
-                })
-                
-                local saturation = utility.create("ImageLabel", {
-                    ZIndex = 13,
-                    Size = UDim2.new(1, -29, 0, picker.AbsoluteSize.X - 29),
-                    Position = UDim2.new(0, 5, 0, 5),
-                    BackgroundColor3 = Color3.fromHSV(hue, sat, val),
-                    Image = "http://www.roblox.com/asset/?id=8630797271",
-                    Parent = picker
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = saturation
-                })
-                
-                local saturationPicker = utility.create("Frame", {
-                    ZIndex = 15,
-                    Size = UDim2.new(0, 4, 0, 4),
-                    Position = UDim2.new(0, (math.clamp(sat * saturation.AbsoluteSize.X, 0, saturation.AbsoluteSize.X - 4)), 0, (math.clamp((1 - val) * saturation.AbsoluteSize.Y, 0, saturation.AbsoluteSize.Y - 4))),
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    Parent = saturation
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = saturationPicker
-                })
-                
-                local outline = utility.create("Frame", {
-                    ZIndex = 14,
-                    Size = UDim2.new(1, 2, 1, 2),
-                    Position = UDim2.new(0, -1, 0, -1),
-                    BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-                    Parent = saturationPicker
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = outline
-                })
-                
-                local hueFrame = utility.create("ImageLabel", {
-                    ZIndex = 13,
-                    Size = UDim2.new(0, 14, 0, picker.AbsoluteSize.X - 29),
-                    ClipsDescendants = true,
-                    BackgroundTransparency = 1,
-                    Position = UDim2.new(1, -19, 0, 5),
-                    BackgroundColor3 = Color3.fromRGB(255, 0, 4),
-                    ScaleType = Enum.ScaleType.Crop,
-                    Image = "http://www.roblox.com/asset/?id=8630799159",
-                    Parent = picker
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 4),
-                    Parent = hueFrame
-                })
-                
-                local huePicker = utility.create("Frame", {
-                    ZIndex = 15,
-                    Size = UDim2.new(1, 0, 0, 2),
-                    Position = UDim2.new(0, 0, 0, math.clamp((1 - hue) * hueFrame.AbsoluteSize.Y, 0, hueFrame.AbsoluteSize.Y - 4)),
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-                    Parent = hueFrame
-                })
-                
-                local outline = utility.create("Frame", {
-                    ZIndex = 14,
-                    Size = UDim2.new(1, 2, 1, 2),
-                    Position = UDim2.new(0, -1, 0, -1),
-                    BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-                    Parent = huePicker
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = outline
-                })
-                
-                local rgb = utility.create("TextBox", {
-                    ZIndex = 14,
-                    Size = UDim2.new(1, -10, 0, 16),
-                    Position = UDim2.new(0, 5, 0, picker.AbsoluteSize.Y - 42),
-                    BackgroundColor3 = theme.ColorPickerBoxes,
-                    PlaceholderColor3 = Color3.fromRGB(180, 180, 180),
-                    FontSize = Enum.FontSize.Size12,
-                    TextSize = 12,
-                    TextColor3 = theme.TextColor,
-                    Text = tostring(math.floor(default.R * 255)) .. ", " .. tostring(math.floor(default.G * 255)) .. ", " .. tostring(math.floor(default.B * 255)),
-                    ClearTextOnFocus = false,
-                    Font = Enum.Font.Gotham,
-                    PlaceholderText = "R,  G,  B",
-                    Parent = picker
-                })
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = rgb
-                })
-                
-                local hex = utility.create("TextBox", {
-                    ZIndex = 14,
-                    Size = UDim2.new(1, -10, 0, 16),
-                    Position = UDim2.new(0, 5, 0, picker.AbsoluteSize.Y - 21),
-                    BackgroundColor3 = theme.ColorPickerBoxes,
-                    PlaceholderColor3 = Color3.fromRGB(180, 180, 180),
-                    FontSize = Enum.FontSize.Size12,
-                    TextSize = 12,
-                    TextColor3 = theme.TextColor,
-                    Text = utility.rgb_to_hex(default),
-                    ClearTextOnFocus = false,
-                    Font = Enum.Font.Gotham,
-                    PlaceholderText = "#FFFFFF",
-                    Parent = picker
-                })
-                
-                picker.Size = UDim2.new(1, -8, 0, 0)
-                
-                utility.create("UICorner", {
-                    CornerRadius = UDim.new(0, 6),
-                    Parent = hex
-                })
-                
-                local function openPicker()
-                    open = not open
-                
-                    if open then
-                        picker.Visible = open
-                    end
-                
-                    utility.tween(picker, {0.5}, {Size = open and UDim2.new(1, -8, 0, picker.AbsoluteSize.X + 24) or UDim2.new(1, -8, 0, 0)}, function() picker.Visible = open end)
-                end
-                
-                colorPickerIcon.MouseButton1Click:connect(openPicker)
-                
-                local function updateHue(input)
-                    local sizeY = 1 - math.clamp((input.Position.Y - hueFrame.AbsolutePosition.Y) / hueFrame.AbsoluteSize.Y, 0, 1)
-                    local posY = math.clamp(((input.Position.Y - hueFrame.AbsolutePosition.Y) / hueFrame.AbsoluteSize.Y) * hueFrame.AbsoluteSize.Y, 0, hueFrame.AbsoluteSize.Y - 2)
-                    utility.tween(huePicker, {0.1}, {Position = UDim2.new(0, 0, 0, posY)})
-                
-                    hue = sizeY
-                
-                    rgb.Text = math.floor((hsv.r * 255) + 0.5) .. ", " .. math.floor((hsv.g * 255) + 0.5) .. ", " .. math.floor((hsv.b * 255) + 0.5)
-                    hex.Text = utility.rgb_to_hex(Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255))
-                
-                    hsv = Color3.fromHSV(hue, sat, val)
-                    saturation.BackgroundColor3 = hsv
-                    colorPickerIcon.BackgroundColor3 = hsv
-                
-                    if flag then 
-                        library.flags[colorPickerFlag] = Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255)
-                    end
-                
-                    colorPickerCallback(Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255))
-                end
-                
-                hueFrame.InputBegan:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        slidingHue = true
-                        updateHue(input)
-                    end
-                end)
-                
-                hueFrame.InputEnded:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        slidingHue = false
-                    end
-                end)
-                
-                inputService.InputChanged:Connect(function(input)
-                    if inputinput.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        if slidingHue then
-                            updateHue(input)
-                        end
-                    end
-                end)
-                
-                local function updateSatVal(input)
-                    local sizeX = math.clamp((input.Position.X - saturation.AbsolutePosition.X) / saturation.AbsoluteSize.X, 0, 1)
-                    local sizeY = 1 - math.clamp((input.Position.Y - saturation.AbsolutePosition.Y) / saturation.AbsoluteSize.Y, 0, 1)
-                    local posY = math.clamp(((input.Position.Y - saturation.AbsolutePosition.Y) / saturation.AbsoluteSize.Y) * saturation.AbsoluteSize.Y, 0, saturation.AbsoluteSize.Y - 4)
-                    local posX = math.clamp(((input.Position.X - saturation.AbsolutePosition.X) / saturation.AbsoluteSize.X) * saturation.AbsoluteSize.X, 0, saturation.AbsoluteSize.X - 4)
-                
-                    utility.tween(saturationPicker, {0.1}, {Position = UDim2.new(0, posX, 0, posY)})
-                
-                    sat = sizeX
-                    val = sizeY
-                
-                    hsv = Color3.fromHSV(hue, sat, val)
-                
-                    rgb.Text = math.floor((hsv.r * 255) + 0.5) .. ", " .. math.floor((hsv.g * 255) + 0.5) .. ", " .. math.floor((hsv.b * 255) + 0.5)
-                    hex.Text = utility.rgb_to_hex(Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255))
-                
-                    saturation.BackgroundColor3 = hsv
-                    colorPickerIcon.BackgroundColor3 = hsv
-                
-                    if flag then 
-                        library.flags[colorPickerFlag] = Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255)
-                    end
-                
-                    colorPickerCallback(Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255))
-                end
-                
-                saturation.InputBegan:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        slidingSaturation = true
-                        updateSatVal(input)
-                    end
-                end)
-                
-                saturation.InputEnded:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        slidingSaturation = false
-                    end
-                end)
-                
-                inputService.InputChanged:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                        if slidingSaturation then
-                            updateSatVal(input)
-                        end
-                    end
-                end)
-                
-                local toggleColorPickerTypes = {}
-                toggleColorPickerTypes = utility.format_table(toggleColorPickerTypes)
-
-                function toggleColorPickerTypes:Toggle(bool)
-                    if toggled ~= bool then
-                        toggleColorPickerTypes()
-                    end
-                end
-                
-                function toggleColorPickerTypes:SetRGB(color)
-                    hue, sat, val = color:ToHSV()
-                    hsv = Color3.fromHSV(hue, sat, val)
-                
-                    saturation.BackgroundColor3 = hsv
-                    colorPickerIcon.BackgroundColor3 = hsv
-                    saturationPicker.Position = UDim2.new(0, (math.clamp(sat * saturation.AbsoluteSize.X, 0, saturation.AbsoluteSize.X - 4)), 0, (math.clamp((1 - val) * saturation.AbsoluteSize.Y, 0, saturation.AbsoluteSize.Y - 4)))
-                    huePicker.Position = UDim2.new(0, 0, 0, math.clamp((1 - hue) * hueFrame.AbsoluteSize.Y, 0, hueFrame.AbsoluteSize.Y - 4))
-                
-                    rgb.Text = math.floor((hsv.r * 255) + 0.5) .. ", " .. math.floor((hsv.g * 255) + 0.5) .. ", " .. math.floor((hsv.b * 255) + 0.5)
-                    hex.Text = utility.rgb_to_hex(Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255))
-                
-                    if flag then 
-                        library.flags[colorPickerFlag] = Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255)
-                    end
-                
-                    colorPickerCallback(Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255))
-                end
-                
-                function toggleColorPickerTypes:SetHex(hex)
-                    color = utility.hex_to_rgb(hex)
-                    
-                    hue, sat, val = color:ToHSV()
-                    hsv = Color3.fromHSV(hue, sat, val)
-                
-                    saturation.BackgroundColor3 = hsv
-                    colorPickerIcon.BackgroundColor3 = hsv
-                    saturationPicker.Position = UDim2.new(0, (math.clamp(sat * saturation.AbsoluteSize.X, 0, saturation.AbsoluteSize.X - 4)), 0, (math.clamp((1 - val) * saturation.AbsoluteSize.Y, 0, saturation.AbsoluteSize.Y - 4)))
-                    huePicker.Position = UDim2.new(0, 0, 0, math.clamp((1 - hue) * hueFrame.AbsoluteSize.Y, 0, hueFrame.AbsoluteSize.Y - 4))
-                
-                    if flag then 
-                        library.flags[colorPickerFlag] = Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255)
-                    end
-                
-                    colorPickerCallback(Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255))
-                end
-                
-                rgb.FocusLost:Connect(function()
-                    local _, amount = rgb.Text:gsub(", ", "")
-                    if amount == 2 then
-                        local values = rgb.Text:split(", ")
-                        local r, g, b = math.clamp(values[1], 0, 255), math.clamp(values[2], 0, 255), math.clamp(values[3], 0, 255)
-                        toggleColorPickerTypes:SetRGB(Color3.fromRGB(r, g, b))
-                    else
-                        rgb.Text = math.floor((hsv.r * 255) + 0.5) .. ", " .. math.floor((hsv.g * 255) + 0.5) .. ", " .. math.floor((hsv.b * 255) + 0.5)
-                    end
-                end)
-                    
-                hex.FocusLost:Connect(function()
-                    if hex.Text:find("#") and hex.Text:len() == 7 then
-                        toggleColorPickerTypes:SetHex(hex.Text)
-                    else
-                        hex.Text = utility.rgb_to_hex(Color3.fromRGB(hsv.r * 255, hsv.g * 255, hsv.b * 255))
-                    end
-                end)
-                
-                hex:GetPropertyChangedSignal("Text"):Connect(function()
-                    if hex.Text == "" then
-                        hex.Text = "#"
-                    end
-                end)
-                
-                function toggleColorPickerTypes:Hide()
-                    toggleColorPicker.Visible = false
-                end
-                
-                function toggleColorPickerTypes:Show()
-                    toggleColorPicker.Visible = true
-                end
-                
-                return toggleColorPickerTypes
-            end
-
-            return sectionTypes
-        end
-
-        return tabTypes
-    end
-
-    return windowTypes
+local IsAlive = function(GetPlayer)
+    return GetPlayer and GetPlayer.Character and GetPlayer.Character:FindFirstChild("HumanoidRootPart") ~= nil and GetPlayer.Character:FindFirstChild("Humanoid") ~= nil and GetPlayer.Character:FindFirstChild("Head") ~= nil and true or false
 end
 
-return library
+spawn(function()
+    while wait() do
+        if getgenv().Settings.FearLas.TargetStats and getgenv().Settings.FearLas.Enabled and enabled then
+            if Plr and IsAlive(Plr) then
+                Background.Visible = true
+                NameOfTarget.Text = tostring(Plr.Character.Humanoid.DisplayName).." ["..tostring(Plr.Name).."]"
+                Picture.Image  = "rbxthumb://type=AvatarHeadShot&id=" ..Plr.UserId.. "&w=420&h=420"
+                HealthBar:TweenSize(UDim2.new(Plr.Character.Humanoid.Health / Plr.Character.Humanoid.MaxHealth, 0, 1, 0), "In", "Linear", 0.25)
+                spawn(function()
+                    if getgenv().Settings.FearLas.TargetStats == false then
+                        Background.Visible = false
+                    end
+                end)
+            end
+        else
+            Background.Visible = false
+        end
+    end
+end)
+    function LockToPlayer()
+        local closestPlayer
+        local shortestDistance = getgenv().Settings.FearLas.FOV
+ 
+        for i, v in pairs(game.Players:GetPlayers()) do
+            if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health ~= 0 and v.Character:FindFirstChild("HumanoidRootPart") then
+                local pos = CC:WorldToViewportPoint(v.Character.PrimaryPart.Position)
+                local magnitude = (V2(pos.X, pos.Y) - V2(mouse.X, mouse.Y)).magnitude
+                if magnitude < shortestDistance then
+                    closestPlayer = v
+                    shortestDistance = magnitude
+                end
+            end
+        end
+        return closestPlayer
+    end
+ 
+local Stats = game:GetService("Stats")
+
+local Piiing = Stats:WaitForChild("Network"):WaitForChild("ServerStatsItem"):WaitForChild("Data Ping")
+local function Predict(Velocity)
+    return V3(Velocity.X,math.clamp(Velocity.Y*0.5,-5,10),Velocity.Z)
+end
+
+local function GetLockPrediction(Part)
+    return Part.CFrame + (Predict(Part.Velocity) * getgenv().PREDICTION)
+end
+local function GetCamPrediction(Part)
+    return Part.CFrame + Predict(Part.Velocity) * (getgenv().CAMPREDICTION)
+end
+
+    local pingvalue = nil;
+    local split = nil;
+    local ping = nil;
+local LocalHL = Instance.new("Highlight") 
+    game:GetService"RunService".Stepped:connect(function()
+        if enabled and getgenv(). Settings.FearLas.Enabled and Plr.Character ~= nil and Plr.Character:FindFirstChild("HumanoidRootPart") or enabled and getgenv(). Settings.FearLas.Camera.Enabled and Plr.Character ~= nil and Plr.Character:FindFirstChild("HumanoidRootPart") then
+if getgenv().Prediction == "Normal" then
+            placemarker.CFrame = CFrame.new(GetLockPrediction(Plr.Character[getgenv().SelectedPart]).Position)         
+elseif getgenv().Prediction == "Yun" then
+            placemarker.CFrame = CFrame.new(Plr.Character[getgenv().SelectedPart].Position+V3(Plr.Character.HumanoidRootPart.AssemblyLinearVelocity.X*getgenv().PREDICTION/10,Plr.Character.HumanoidRootPart.AssemblyLinearVelocity.Y*getgenv().JUMPPREDICTION/10,Plr.Character.HumanoidRootPart.AssemblyLinearVelocity.Z*getgenv().PREDICTION/10))
+end
+
+LocalHL.Parent = Plr.Character
+LocalHL.FillTransparency = 1
+LocalHL.FillColor = Color3.fromRGB(0,0,139)
+LocalHL.OutlineColor = Color3.fromRGB(255,255,255)
+
+        else
+            placemarker.CFrame = CFrame.new(0, 9999, 0)
+    
+          LocalHL.Parent = nil
+        
+        end
+pingvalue = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
+split = string.split(pingvalue,'(')
+ping = tonumber(split[1])
+
+if getgenv().Settings.FearLas.AdvancedAutoPred == true and enabled then
+    getgenv().CAMJUMPPREDICTION = 0.05
+    if ping > 300 then
+        getgenv().CAMPREDICTION = 0.434
+    elseif ping > 290 then
+        getgenv().CAMPREDICTION = 0.422
+    elseif ping > 280 then
+        getgenv().CAMPREDICTION = 0.44
+    elseif ping > 270 then
+        getgenv().CAMPREDICTION = 0.4385
+    elseif ping > 260 then
+        getgenv().CAMPREDICTION = 0.4158
+    elseif ping > 250 then
+        getgenv().CAMPREDICTION = 0.3148
+    elseif ping > 240 then
+        getgenv().CAMPREDICTION = 0.34
+    elseif ping > 230 then
+        getgenv().CAMPREDICTION = 0.33
+    elseif ping > 220 then
+        getgenv().CAMPREDICTION = 0.30
+    elseif ping > 210 then
+        getgenv().CAMPREDICTION = 0.295
+    elseif ping > 200 then
+        getgenv().CAMPREDICTION = 0.2915
+    elseif ping > 190 then
+        getgenv().CAMPREDICTION = 0.2911
+    elseif ping > 180 then
+        getgenv().CAMPREDICTION = 0.28291198328
+    elseif ping > 180 then
+        getgenv().CAMPREDICTION = 0.25291198328
+    elseif ping > 170 then
+        getgenv().CAMPREDICTION = 0.28
+    elseif ping > 160 then
+        getgenv().CAMPREDICTION = 0.2754
+    elseif ping  >150 then
+        getgenv().CAMPREDICTION = 0.271
+    elseif ping  >140 then
+        getgenv().CAMPREDICTION = 0.25
+       elseif ping > 130 then
+        getgenv().CAMPREDICTION = 0.12057
+    elseif ping > 120 then
+        getgenv().CAMPREDICTION = 0.1966
+    elseif ping > 110 then
+        getgenv().CAMPREDICTION = 0.18642271
+    elseif ping > 100 then
+        getgenv().CAMPREDICTION = 0.18533
+    elseif ping > 90 then
+        getgenv().CAMPREDICTION = 0.1749573
+    elseif ping > 80 then
+        getgenv().CAMPREDICTION = 0.1745
+    elseif ping > 70 then
+        getgenv().CAMPREDICTION = 0.1642
+    elseif ping > 50 then
+        getgenv().CAMPREDICTION = 0.14267
+    elseif ping > 40 then
+        getgenv().CAMPREDICTION = 0.142
+    elseif ping > 30 then
+        getgenv().CAMPREDICTION = 0.1312
+   elseif ping > 20 then
+        getgenv().CAMPREDICTION = 0.1312
+   elseif ping > 10 then
+        getgenv().CAMPREDICTION = 0.1287
+   end
+end
+if getgenv().Settings.FearLas.AUTOPRED == true then
+if getgenv().AutoPredType == "Normal" then
+if getgenv().Prediction == "Normal" then
+getgenv().JUMPPREDICTION = tostring(ping/1500)
+if ping <200 then
+        getgenv().PREDICTION = 0.2198343243234332
+    elseif ping < 170 then
+        getgenv().PREDICTION = 0.2165713
+    elseif ping < 160 then
+        getgenv().PREDICTION = 0.16242
+    elseif ping < 150 then
+        getgenv().PREDICTION = 0.158041
+    elseif ping < 140 then
+        getgenv().PREDICTION = 0.155313
+    elseif ping < 130 then
+        getgenv().PREDICTION = 0.152692
+    elseif ping < 120 then
+        getgenv().PREDICTION = 0.153017
+    elseif ping < 110 then
+        getgenv().PREDICTION = 0.15165
+    elseif ping < 100 then
+  getgenv().PREDICTION = 0.1483987
+ elseif ping < 80 then
+  getgenv().PREDICTION = 0.1451340
+ elseif ping < 70 then
+  getgenv().PREDICTION = 0.143633
+ elseif ping < 65 then
+  getgenv().PREDICTION = 0.1374236
+ elseif ping < 50 then
+  getgenv().PREDICTION = 0.13644
+ elseif ping < 30 then
+  getgenv().PREDICTION = 0.12452476
+end
+end
+elseif getgenv().AutoPredType == "Beta AutoPred" then
+    if getgenv().Prediction == "Normal" then
+    getgenv().JUMPPREDICTION = tostring(ping/1500)
+    if ping <200 then
+        getgenv().PREDICTION = 0.1973432432343325
+    elseif ping < 150 then
+        getgenv().PREDICTION = 0.1922
+    elseif ping < 90 then
+        getgenv().PREDICTION = 0.176
+    elseif ping < 80 then
+        getgenv().PREDICTION = 0.169
+    elseif ping < 70 then
+        getgenv().PREDICTION = 0.1355
+    elseif ping < 50 then
+        getgenv().PREDICTION = 0.125
+    elseif ping < 40 then
+        getgenv().PREDICTION = 0.12
+    elseif ping < 30 then
+        getgenv().PREDICTION = 0.12
+    end
+end
+elseif getgenv().AutoPredType == "Old Azure" then
+if getgenv().Prediction == "Normal" then
+ getgenv().JUMPPREDICTION = tostring(ping/1500)
+   if ping < 360 then
+  getgenv().PREDICTION = 0.16537
+  elseif ping < 270 then
+     getgenv().PREDICTION = 0.195566
+     elseif ping < 260 then
+         getgenv().PREDICTION = 0.175566
+      elseif ping < 250 then
+         getgenv().PREDICTION = 0.1651
+              elseif ping < 240 then
+           getgenv().PREDICTION = 0.16780
+                elseif ping < 230 then
+                    getgenv().PREDICTION = 0.15692
+                elseif ping < 220 then
+                    getgenv().PREDICTION = 0.165566
+                elseif ping < 210 then
+                    getgenv().PREDICTION = 0.16780
+                elseif ping < 200 then
+                    getgenv().PREDICTION = 0.165566
+                elseif ping < 190 then
+                    getgenv().PREDICTION = 0.166547
+                elseif ping < 180 then
+                    getgenv().PREDICTION = 0.19284
+                elseif ping < 170 then
+                    getgenv().PREDICTION = 0.1923111 
+                elseif ping < 160 then
+                    getgenv().PREDICTION = 0.16
+                elseif ping < 150 then
+                    getgenv().PREDICTION = 0.15
+                elseif ping < 140 then
+                    getgenv().PREDICTION = 0.1223333
+                elseif ping < 130 then
+                    getgenv().PREDICTION = 0.156692
+                elseif ping < 120 then
+                    getgenv().PREDICTION = 0.143765
+                elseif ping < 110 then
+                    getgenv().PREDICTION = 0.1455
+                elseif ping < 100 then
+                    getgenv().PREDICTION = 0.130340
+                elseif ping < 90 then
+                    getgenv().PREDICTION = 0.136
+                elseif ping < 80 then
+                    getgenv().PREDICTION = 0.1347
+                elseif ping < 70 then
+                    getgenv().PREDICTION = 0.119
+                elseif ping < 60 then
+                    getgenv().PREDICTION = 0.12731
+                elseif ping < 50 then
+                    getgenv().PREDICTION = 0.127668
+                elseif ping < 40 then
+                    getgenv().PREDICTION = 0.125
+                elseif ping < 30 then
+                    getgenv().PREDICTION = 0.11
+                elseif ping < 20 then
+                    getgenv().PREDICTION = 0.12588
+                elseif ping < 10 then
+                    getgenv().PREDICTION = 0.09
+                end
+end
+elseif getgenv().AutoPredType == "Fake Celex" then
+    if getgenv().Prediction == "Normal" then
+        getgenv().JUMPPREDICTION = tostring(ping/1500)
+                if ping > 190 then
+                    getgenv().PREDICTION = 0.206547
+                elseif ping > 180 then
+                    getgenv().PREDICTION = 0.19284
+                elseif ping > 170 then
+                    getgenv().PREDICTION = 0.1923111
+                elseif ping > 160 then
+                    getgenv().PREDICTION = 0.1823111
+                elseif ping > 150 then
+                    getgenv().PREDICTION = 0.171
+                elseif ping > 140 then
+                    getgenv().PREDICTION = 0.165773
+                elseif ping > 130 then
+                    getgenv().PREDICTION = 0.14333322
+                elseif ping > 120 then
+                    getgenv().PREDICTION = 0.143765
+                elseif ping > 110 then
+                    getgenv().PREDICTION = 0.1455
+                elseif ping > 100 then
+                    getgenv().PREDICTION = 0.143987
+                elseif ping > 90 then
+                    getgenv().PREDICTION = 0.14215
+                elseif ping > 80 then
+                    getgenv().PREDICTION = 0.141340
+                elseif ping > 70 then
+                    getgenv().PREDICTION = 0.13633
+                elseif ping > 60 then
+                    getgenv().PREDICTION = 0.12731
+                elseif ping > 50 then
+                    getgenv().PREDICTION = 0.127668
+                elseif ping > 40 then
+                    getgenv().PREDICTION = 0.125
+                elseif ping > 30 then
+                    getgenv().PREDICTION = 0.1261
+                elseif ping > 20 then
+                    getgenv().PREDICTION = 0.12588
+                elseif ping > 10 then
+                    getgenv().PREDICTION = 0.09
+                end
+    end
+
+end
+end
+
+if getgenv().Settings.FearLas.Resolver.Enabled then
+if getgenv().Settings.FearLas.Resolver.Type == "Delta Time" then
+print("wsg")
+end
+if getgenv().Settings.FearLas.Resolver.Type == "Recalculator" then
+print("wsg")
+end
+if getgenv().Settings.FearLas.Resolver.Type == "No Y Velocity" then
+print("wsg")
+end
+end
+    end)
+
+
+game:GetService"RunService".Stepped:connect(function()
+    if enabled and getgenv().Settings.FearLas.Camera.Enabled then
+        if Plr ~= nil then
+            local shakeOffset = V3(
+                math.random(-getgenv().ShakeX, getgenv().ShakeX),
+                math.random(-getgenv().ShakeY, getgenv().ShakeY),
+                math.random(-getgenv().ShakeZ, getgenv().ShakeZ)
+            ) * 0.1
+local HorizontalLookPosition = CFrame.new(CC.CFrame.p, GetCamPrediction(Plr.Character[getgenv().SelectedPart]).Position+shakeOffset)
+      CC.CFrame = CC.CFrame:Lerp(HorizontalLookPosition, getgenv().HorizontalSmoothness)
+    end
+end
+end)
+
+    local mt = getrawmetatable(game)
+    local old = mt.__namecall
+    setreadonly(mt, false)
+    mt.__namecall = newcclosure(function(...)
+        local args = {...}
+        local vap = {"UpdateMousePos", "GetMousePos", "MousePos", "MOUSE", "MousePosUpdate"}
+        if enabled and getnamecallmethod() == "FireServer" and table.find(vap, args[2]) and getgenv().Settings.FearLas.Enabled and Plr.Character ~= nil and getgenv().Settings.FearLas.LOCKTYPE == "Namecall" then
+            if getgenv().Prediction == "Normal" then
+            args[3] = GetLockPrediction(Plr.Character[getgenv().SelectedPart]).Position
+            elseif getgenv().Prediction == "Yun" then
+            args[3] = Plr.Character[getgenv().SelectedPart].Position+V3(Plr.Character.HumanoidRootPart.AssemblyLinearVelocity.X*getgenv().PREDICTION/10,Plr.Character.HumanoidRootPart.AssemblyLinearVelocity.Y*getgenv().JUMPPREDICTION/10,Plr.Character.HumanoidRootPart.AssemblyLinearVelocity.Z*getgenv().PREDICTION/10)
+            else
+ 
+            args[3] = Plr.Character[SelectedPart].Position
+ 
+            end
+ 
+            return old(unpack(args))
+        end
+        return old(...)
+    end)
+
+local Hooks = {}
+local Client = game.Players.LocalPlayer
+
+Hooks[1] = hookmetamethod(Client:GetMouse(), "__index", newcclosure(function(self, index)
+    if index == "Hit" and getgenv().Settings.FearLas.LOCKTYPE == "Index" and enabled and Plr.Character ~= nil and getgenv().Settings.FearLas.Enabled then
+            local position = CFrame.new(GetLockPrediction(Plr.Character[getgenv().SelectedPart]).Position)
+            return position
+        
+    end
+    return Hooks[1](self, index)
+end))
+
+getgenv().CFrameDesync = {
+           Enabled = false,
+           AnglesEnabled = false,
+           Type = "Random",
+           Visualize = false,
+           VisualizeColor = Color3.fromRGB(255,255,255),
+           Random = {
+               X = 5,
+               Y = 5,
+               Z = 5,
+               AnglesX = 5,
+               AnglesY = 5,
+               AnglesZ = 5,
+               },
+           Custom = {
+               X = 5,
+               Y = 5,
+               Z = 5,
+               AnglesX = 5,
+               AnglesY = 5,
+               AnglesZ = 5,
+               },
+     TargetStrafe = {
+               Speed = 10,
+               Height = 10,
+               Distance = 7,
+               },
+}
+
+local straight = {
+         Visuals = {},
+         Desync = {},
+         Hooks = {},
+         Connections = {}
+}
+
+
+
+local RunService = game:GetService("RunService")
+
+
+task.spawn(function()
+straight.Visuals["R6Dummy"] = game:GetObjects("rbxassetid://9474737816")[1]; straight.Visuals["R6Dummy"].Head.Face:Destroy(); for i, v in pairs(straight.Visuals["R6Dummy"]:GetChildren()) do v.Transparency = v.Name == "HumanoidRootPart" and 1 or 0.70; v.Material = "Neon"; v.Color = Color3.fromRGB(255, 255, 255); v.CanCollide = false; v.Anchored = false end
+end)
+
+local Utility = {}
+
+do --// Utility Functions
+    function Utility:Connection(connectionType, connectionCallback)
+        local connection = connectionType:Connect(connectionCallback)
+        straight.Connections[#straight.Connections + 1] = connection
+        return connection
+    end
+end
+
+Utility:Connection(RunService.PostSimulation, function()
+if getgenv().CFrameDesync.AnglesEnabled or getgenv().CFrameDesync.Enabled then
+        straight.Desync[1] = lplr.Character.HumanoidRootPart.CFrame
+        local cframe = lplr.Character.HumanoidRootPart.CFrame
+        if getgenv().CFrameDesync.Enabled then
+            if getgenv().CFrameDesync.Type == "Random" then
+                cframe = cframe * CFrame.new(math.random(-getgenv().CFrameDesync.Random.X, getgenv().CFrameDesync.Random.X), math.random(-getgenv().CFrameDesync.Random.Y, getgenv().CFrameDesync.Random.Y), math.random(-getgenv().CFrameDesync.Random.Z, getgenv().CFrameDesync.Random.Z))
+            elseif getgenv().CFrameDesync.Type == "Custom" then
+                cframe = cframe * CFrame.new(getgenv().CFrameDesync.Custom.X, getgenv().CFrameDesync.Custom.Y, getgenv().CFrameDesync.Custom.Z)
+            elseif getgenv().CFrameDesync.Type == "Mouse" then
+                cframe = CFrame.new(lplr:GetMouse().Hit.Position)
+            elseif getgenv().CFrameDesync.Type == "Target Strafe" then
+            if enabled and Plr ~= nil then
+                local currentTime = tick() 
+                cframe = CFrame.new(Plr.Character[getgenv().SelectedPart].Position) * CFrame.Angles(0, 2 * math.pi * currentTime * getgenv().CFrameDesync.TargetStrafe.Speed % (2 * math.pi), 0) * CFrame.new(0, getgenv().CFrameDesync.TargetStrafe.Height, getgenv().CFrameDesync.TargetStrafe.Distance)
+            elseif getgenv.CFrameDesync.Type == "Local Strafe" then
+                local currentTime = tick() 
+                cframe = CFrame.new(lplr.Character.HumanoidRootPart.Position) * CFrame.Angles(0, 2 * math.pi * currentTime * getgenv.CFrameDesync.TargetStrafe.Speed % (2 * math.pi), 0) * CFrame.new(0, getgenv.CFrameDesync.TargetStrafe.Height, getgenv().CFrameDesync.TargetStrafe.Distance)
+                end
+        end
+
+        if getgenv().CFrameDesync.Visualize then
+            straight.Visuals["R6Dummy"].Parent = workspace
+            straight.Visuals["R6Dummy"].HumanoidRootPart.Velocity = Vector3.new()
+            straight.Visuals["R6Dummy"]:SetPrimaryPartCFrame(cframe)
+            for i, v in pairs(straight.Visuals["R6Dummy"]:GetChildren()) do v.Transparency = v.Name == "HumanoidRootPart" and 1 or 0.70; v.Material = "Neon"; v.Color = getgenv().CFrameDesync.VisualizeColor; v.CanCollide = false; v.Anchored = false end
+        else
+            straight.Visuals["R6Dummy"].Parent = nil
+        end
+
+        if getgenv().CFrameDesync.AnglesEnabled then
+            if getgenv().CFrameDesync.Type == "Random" then
+                cframe = cframe * CFrame.Angles(math.rad(math.random(getgenv().CFrameDesync.Random.AnglesX)), math.rad(math.random(getgenv().CFrameDesync.Random.AnglesY)), math.rad(math.random(getgenv().CFrameDesync.Random.AnglesZ)))
+            elseif getgenv().CFrameDesync.Type == "Custom" then
+                cframe = cframe * CFrame.Angles(math.rad(getgenv().CFrameDesync.Custom.AnglesX), math.rad(getgenv().CFrameDesync.Custom.AnglesY), math.rad(getgenv().CFrameDesync.Custom.AnglesZ))
+            end
+        end
+        lplr.Character.HumanoidRootPart.CFrame = cframe
+        RunService.RenderStepped:Wait()
+        lplr.Character.HumanoidRootPart.CFrame = straight.Desync[1]
+    else
+        if straight.Visuals["R6Dummy"].Parent ~= nil then
+            straight.Visuals["R6Dummy"].Parent = nil
+        end
+    end
+end
+end)
+
+--// Hooks
+local MainHookingFunctionsTick = tick()
+--
+straight.Hooks[1] = hookmetamethod(game, "__index", newcclosure(function(self, key)
+    if not checkcaller() then
+        if key == "CFrame" and straight.Desync[1] and (getgenv().CFrameDesync.AnglesEnabled or getgenv().CFrameDesync.Enabled) and lplr.Character and lplr.Character:FindFirstChild("HumanoidRootPart") and lplr.Character:FindFirstChild("Humanoid") and lplr.Character:FindFirstChild("Humanoid").Health > 0 then
+            if self == lplr.Character.HumanoidRootPart then
+                return straight.Desync[1] or CFrame.new()
+            elseif self == lplr.Character.Head then
+                return straight.Desync[1] and straight.Desync[1] + Vector3.new(0, lplr.Character.HumanoidRootPart.Size / 2 + 0.5, 0) or CFrame.new()
+            end
+        end
+    end
+    return straight.Hooks[1](self, key)
+end))
+
+ for _, key in next, getgc(true) do 
+        local function updateKey(instanceType)
+            if pcall(function() return rawget(key, instanceType) end) and typeof(rawget(key, instanceType)) == 'table' and (rawget(key, instanceType))[1] == 'kick' then
+                key.tvk = {
+                    'kick',
+                    function() 
+                        return game.Workspace:WaitForChild('')
+                    end
+                }
+            end
+        end
+        updateKey('indexInstance')
+        updateKey('namecallInstance')
+    end
+do
+
+local Window = library:AddWindow("Aurion", {
+		main_color = Color3.fromRGB(64,64,64),
+		min_size = Vector2.new(450, 500),
+		toggle_key = Enum.KeyCode.P,
+		can_resize = true,
+})
+
+
+	local Tab = Window:AddTab("Camera Lock")
+	local WsgCuh = Window:AddTab("Silent Aim")
+	local Teb = Window:AddTab("Target Lock")
+	local Tib = Window:AddTab("Miscs")
+	local Tub = Window:AddTab("Debugging")
+
+	do -- Elements
+	WsgCuh:AddLabel("Configuration")
+
+local silentAim = {
+    targetPart = "HumanoidRootPart",
+    prediction = 0.1485436,
+    isActive = true,
+}
+
+local fovSettings = {
+    showFOV = true,
+    fill = false,
+    size = 60,
+    transparency = 0.1,
+    thickness = 0.1,
+    color = Color3.fromRGB(0,0,139),
+}
+
+local fovCircle = Drawing.new("Circle")
+fovCircle.Color = fovSettings.color
+fovCircle.Visible = fovSettings.showFOV
+fovCircle.Filled = fovSettings.fill
+fovCircle.Radius = fovSettings.size
+fovCircle.Transparency = fovSettings.transparency
+fovCircle.Thickness = fovSettings.thickness
+
+local camera = workspace.CurrentCamera
+fovCircle.Position = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 2)
+
+-- Function to Find Closest Player
+local function findClosestPlayer()
+    local players = game:GetService("Players")
+    local localPlayer = players.LocalPlayer
+    local closestPlayer
+    local closestDistance = math.huge
+
+    for _, player in ipairs(players:GetPlayers()) do
+        if player ~= localPlayer and player.Character and player.Character:FindFirstChild(silentAim.targetPart) then
+            local part = player.Character[silentAim.targetPart]
+            local screenPos, onScreen = camera:WorldToViewportPoint(part.Position)
+
+            if onScreen then
+                local distanceToCenter = (fovCircle.Position - Vector2.new(screenPos.X, screenPos.Y)).Magnitude
+
+                if distanceToCenter < closestDistance and distanceToCenter <= fovCircle.Radius then
+                    closestPlayer = player
+                    closestDistance = distanceToCenter
+                end
+            end
+        end
+    end
+
+    return closestPlayer
+end
+
+local target = nil
+game:GetService("RunService").RenderStepped:Connect(function()
+    target = findClosestPlayer()
+end)
+
+local mt = getrawmetatable(game)
+local old = mt.__namecall
+setreadonly(mt, false)
+
+local function newFireServer(...)
+    local args = {...}
+    if silentAim.isActive and target ~= nil and target.Character and getnamecallmethod() == "FireServer" and args[2] == "UpdateMousePos" then
+        args[3] = target.Character[silentAim.targetPart].Position + (target.Character[silentAim.targetPart].Velocity * silentAim.prediction)
+        return old(unpack(args))
+    end
+    return old(...)
+end
+
+mt.__namecall = newcclosure(newFireServer)
+
+local function toggleSilentAim()
+    silentAim.isActive = not silentAim.isActive
+    fovCircle.Visible = silentAim.isActive
+end
+
+	local bleud = WsgCuh:AddSwitch("Enabled", function(bool)
+	fovCircle.Visible  = bool
+	silentAim.isActive = bool
+	end)
+bleud:Set(true)
+	local blyud = WsgCuh:AddSwitch("Filled", function(bool)
+	fovCircle.Filled = bool
+	end)
+blyud:Set(true)
+	WsgCuh:AddTextBox("FOV Size", function(text)
+	fovCircle.Radius = text
+		end, 
+	{
+	["clear"] = false, -- Default: true (options are optional)
+	})
+	WsgCuh:AddTextBox("Horizontal Prediction", function(text)
+	silentAim.Prediction = text
+		end, 
+	{
+	["clear"] = false, -- Default: true (options are optional)
+	})
+	WsgCuh:AddTextBox("Vertical Prediction", function(text)
+	getgenv().Settings.Silent.Prediction.Vertical = text
+		end, 
+	{
+	["clear"] = false, -- Default: true (options are optional)
+	})
+local Swaaetch = WsgCuh:AddSwitch("Auto SetUp", function(bool)
+getgenv().Settings.FearLas.AUTOPRED = bool
+end)
+Swaaetch:Set(false)
+local Droeopdown = WsgCuh:AddDropdown("Aim Bone", function(object)
+getgenv().SelectedPart = object
+end)
+Droeopdown:Add("HumanoidRootPart")
+Droeopdown:Add("UpperTorso")
+Droeopdown:Add("LowerTorso")
+Droeopdown:Add("Head")
+
+		Tab:AddLabel("Configuration")
+
+	local Lenabled = Tab:AddSwitch("Enabled", function(bool)
+		getgenv().Settings.FearLas.Camera.Enabled = bool
+		end)
+		Lenabled:Set(false)
+
+	Tab:AddTextBox("Horizontal Prediction", function(text)
+	getgenv().CAMPREDICTION = text
+		end, 
+	{
+	["clear"] = false, -- Default: true (options are optional)
+	})
+
+Tab:AddTextBox("Vert Prediction", function(text)
+	getgenv().CAMJUMPPREDICTION = text
+		end, 
+	{
+	["clear"] = false, -- Default: true (options are optional)
+	})
+
+Tab:AddTextBox("Aim Speed", function(text)
+	getgenv().AimSpeed = text
+		end, 
+	{
+	["clear"] = false, -- Default: true (options are optional)
+	})
+
+	Tab:AddTextBox("Smoothness Value", function(text)
+		getgenv().HorizontalSmoothness = text
+		end, 
+	{
+	["clear"] = false, -- Default: true (options are optional)
+	})
+
+local ShakeFolder = Tab:AddFolder("Shake Configuration")
+	ShakeFolder:AddTextBox("X Value", function(text)
+		getgenv().ShakeX = text
+		end, 
+	{
+	["clear"] = false, -- Default: true (options are optional)
+	})
+	ShakeFolder:AddTextBox("Y Value", function(text)
+		getgenv().ShakeY = text
+		end, 
+	{
+	["clear"] = false, -- Default: true (options are optional)
+	})
+	ShakeFolder:AddTextBox("Z Value", function(text)
+		getgenv().ShakeZ = text
+		end, 
+	{
+	["clear"] = false, -- Default: true (options are optional)
+	})
+local thingsetup = Tab:AddSwitch("Auto SetUp", function(bool)
+	getgenv().Settings.FearLas.AdvancedAutoPred = bool
+end)
+thingsetup:Set(false)
+	local Dropdown = Tab:AddDropdown("Aim Bone", function(object)
+		getgenv().SelectedPart = object
+		end)
+Dropdown:Add("HumanoidRootPart")
+Dropdown:Add("UpperTorso")
+Dropdown:Add("LowerTorso")
+Dropdown:Add("Head")
+
+--// Target Lock
+
+	Teb:AddLabel("Configuration")
+	local bled = Teb:AddSwitch("Enabled", function(bool)
+	getgenv().Settings.FearLas.Enabled = bool
+	end)
+bled:Set(false)
+		local TypeThing = Teb:AddDropdown("Aim Type", function(object)
+			getgenv().Settings.FearLas.LOCKTYPE = object
+		end)
+TypeThing:Add("Namecall")
+TypeThing:Add("Index")
+
+
+
+
+
+
+
+
+
+		local PredTypeThing = Teb:AddDropdown("Prediction Type", function(object)
+			getgenv().Prediction = object
+		end)
+PredTypeThing:Add("Normal")
+PredTypeThing:Add("Yun")
+	Teb:AddTextBox("Horizontal Prediction", function(text)
+	getgenv().PREDICTION = text
+		end, 
+	{
+	["clear"] = false, -- Default: true (options are optional)
+	})
+		local Swiitch = Teb:AddSwitch("Auto SetUp", function(bool)
+			getgenv().Settings.FearLas.AUTOPRED = bool
+		end)
+		Swiitch:Set(false)
+		local pptch = Teb:AddSwitch("pp", function(bool)
+			getgenv().Resolver = bool
+		end)
+		pptch:Set(false)
+
+		local Droopdown = Teb:AddDropdown("Aim Bone", function(object)
+		getgenv().SelectedPart = object
+		end)
+
+Droopdown:Add("HumanoidRootPart")
+Droopdown:Add("UpperTorso")
+Droopdown:Add("LowerTorso")
+Droopdown:Add("Head")
+
+--// Miscs
+
+local OnHitFolder = Tib:AddFolder("On Hit")
+	OnHitFolder:AddLabel("On Hit")
+
+local HitsoundsFolder = OnHitFolder:AddFolder("Hitsounds")
+
+local HitsoundEnabledThing = HitsoundsFolder:AddSwitch("Enabled", function(bool)
+		getgenv().Settings.FearLas.OnHit.Hitsound.Enabled = bool
+	end)
+HitsoundEnabledThing:Set(false)
+
+local SoundsOptions = HitsoundsFolder:AddDropdown("Sound Effect", function(object)
+		getgenv().Settings.FearLas.OnHit.Hitsound.Sound = object
+		end)
+
+SoundsOptions:Add("hitsounds/hentai.wav")
+SoundsOptions:Add("hitsounds/amongus.wav")
+SoundsOptions:Add("hitsounds/sparkle.wav")
+SoundsOptions:Add("hitsounds/bell.wav")
+SoundsOptions:Add("hitsounds/bepis.wav")
+SoundsOptions:Add("hitsounds/bubble.wav")
+SoundsOptions:Add("hitsounds/cock.wav")
+SoundsOptions:Add("hitsounds/cod.wav")
+SoundsOptions:Add("hitsounds/fatality.wav")
+SoundsOptions:Add("hitsounds/phonk.wav")
+
+local HitchamsFolder = OnHitFolder:AddFolder("Hitchams")
+
+local HitchamsEnabledThing = HitchamsFolder:AddSwitch("Enabled", function(bool)
+		getgenv().Settings.FearLas.OnHit.Hitchams.Enabled = bool
+end)
+HitchamsEnabledThing:Set(false)
+
+local MaterialOptions = HitchamsFolder:AddDropdown("Material", function(object)
+		getgenv().Settings.FearLas.OnHit.Hitchams.Material = object
+		end)
+
+MaterialOptions:Add("ForceField")
+MaterialOptions:Add("Neon")
+MaterialOptions:Add("Glass")
+MaterialOptions:Add("Plastic")
+MaterialOptions:Add("Brick")
+
+
+
+
+local AntiFolder = Tib:AddFolder("Anti Lock")
+		AntiFolder:AddLabel("Anti Locks")
+
+local CSyncFolder = Tib:AddFolder("CFrame Desync")
+CSyncFolder:AddLabel("CFrame Desync")
+local TheDesyncBegins = CSyncFolder:AddSwitch("Enabled", function(bool)
+	getgenv().CFrameDesync.Enabled = bool
+end)
+TheDesyncBegins:Set(false)
+local TVManTitan = CSyncFolder:AddSwitch("Visualize", function(bool)
+
+	getgenv().CFrameDesync.Visualize = bool
+
+end)
+TVManTitan:Set(false)
+local CFrameSyncOptions = CSyncFolder:AddDropdown("Type", function(object)
+getgenv().CFrameDesync.Type = object
+end)
+
+CFrameSyncOptions:Add("Random")
+CFrameSyncOptions:Add("Custom")
+CFrameSyncOptions:Add("Mouse")
+CFrameSyncOptions:Add("Target Strafe")
+CFrameSyncOptions:Add("Local Strafe")
+
+local RandomizedSection = CSyncFolder:AddFolder("Random Configuration")
+RandomizedSection:AddTextBox("X", function(text)
+getgenv().CFrameDesync.Random.X = text
+end, 
+{
+["clear"] = false, -- Default: true (options are optional)
+})
+RandomizedSection:AddTextBox("Y", function(text)
+
+getgenv().CFrameDesync.Random.Y = text
+
+end, 
+{
+["clear"] = false, -- Default: true (options are optional)
+})
+RandomizedSection:AddTextBox("Z", function(text)
+getgenv().CFrameDesync.Random.Z = text
+end, 
+{
+["clear"] = false, -- Default: true (options are optional)
+})
+local CustomTypeSection = CSyncFolder:AddFolder("Custom Configuration")
+
+CustomTypeSection:AddTextBox("X", function(text)
+
+getgenv().CFrameDesync.Custom.X = text
+end, 
+{
+["clear"] = false, -- Default: true (options are optional)
+})
+CustomTypeSection:AddTextBox("Y", function(text)
+
+getgenv().CFrameDesync.Custom.Y = text
+
+end, 
+{
+["clear"] = false, -- Default: true (options are optional)
+})
+CustomTypeSection:AddTextBox("Z", function(text)
+getgenv().CFrameDesync.Custom.Z = text
+end, 
+{
+["clear"] = false, -- Default: true (options are optional)
+})
+local StrafeFolder = CSyncFolder:AddFolder("Strafe Configuration")
+StrafeFolder:AddTextBox("Speed", function(text)
+getgenv().CFrameDesync.TargetStrafe.Speed = text
+end, 
+{
+["clear"] = false, -- Default: true (options are optional)
+})
+StrafeFolder:AddTextBox("Height", function(text)
+getgenv().CFrameDesync.TargetStrafe.Height = text
+end, 
+{
+["clear"] = false, -- Default: true (options are optional)
+})
+StrafeFolder:AddTextBox("Distance", function(text)
+
+getgenv().CFrameDesync.TargetStrafe.Distance = text
+
+end, 
+{
+["clear"] = false, -- Default: true (options are optional)
+})
+
+
+
+
+
+local ActualMiscs = Tib:AddFolder("Others")
+ActualMiscs:AddLabel("Miscellaneous")
+ActualMiscs:AddButton("Legit Macro", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/DHBCommunity/DHBOfficialScript/main/macromobbyballigusapo"))()
+end)
+ActualMiscs:AddButton("CFrame Speed", function()
+-- Initial values
+getgenv().Speed = false
+getgenv().SpeedAmount = 2
+-- Create a basic GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Text = "Toggle Speed"
+ToggleButton.Parent = ScreenGui
+ToggleButton.BackgroundTransparency = 0.5
+ToggleButton.BorderSizePixel = 0
+ToggleButton.Position = UDim2.new(1, -120, 0, 35) -- Adjusted the position to top right corner
+ToggleButton.Size = UDim2.new(0, 100, 0, 18)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(0,0,139)
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+local UICorner = Instance.new("UICorner")
+UICorner.Parent = ToggleButton
+local function onButtonClicked()
+    getgenv().Speed = not getgenv().Speed
+end
+ToggleButton.MouseButton1Click:Connect(onButtonClicked)
+-- Your existing code modified for the GUI
+game:GetService("RunService").Stepped:Connect(function()
+    if getgenv().Speed then
+        lplr.Character.HumanoidRootPart.CFrame = lplr.Character.HumanoidRootPart.CFrame + lplr.Character.Humanoid.MoveDirection * getgenv().SpeedAmount
+    end
+end)
+end)
+ActualMiscs:AddButton("Menu", function()
+local Player = game.Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "Corporations"
+ScreenGui.ResetOnSpawn = false -- Keep the GUI after respawn
+ScreenGui.Parent = PlayerGui
+
+local TextButton = Instance.new("TextButton")
+TextButton.Name = "Imperial"
+TextButton.Parent = ScreenGui
+TextButton.BackgroundColor3 = Color3.fromRGB(0,0,139)
+TextButton.BackgroundTransparency = 0.5
+TextButton.BorderSizePixel = 0
+TextButton.Position = UDim2.new(1, 110, 0, 40) -- Adjusted the position to top right corner
+TextButton.Size = UDim2.new(0, 100, 0, 18)
+TextButton.Font = Enum.Font.SourceSans
+TextButton.Text = "Toggle"
+TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton.TextSize = 18
+local UICorner = Instance.new("UICorner")
+UICorner.Parent = TextButton
+
+-- Function to send the keybind
+local function OnButtonClick()
+    local vim = game:GetService("VirtualInputManager")
+    vim:SendKeyEvent(true, "RightShift", false, game)
+end
+
+-- Event connection
+TextButton.MouseButton1Click:Connect(OnButtonClick)
+end)
+ActualMiscs:AddTextBox("Speed Amount", function(text)
+getgenv().SpeedAmount = text
+end, 
+{
+["clear"] = false, -- Default: true (options are optional)
+})
+local DelaySwitch = ActualMiscs:AddSwitch("No Delay", function(bool)
+	getgenv().NoDelay = bool
+end)
+DelaySwitch:Set(false)
+ActualMiscs:AddButton("Rightclick", function()
+local Player = game.Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "Corporations"
+ScreenGui.ResetOnSpawn = false -- Keep the GUI after respawn
+ScreenGui.Parent = PlayerGui
+
+local TextButton = Instance.new("TextButton")
+TextButton.Name = "Imperial"
+TextButton.Parent = ScreenGui
+TextButton.BackgroundColor3 = Color3.fromRGB(0,0,139)
+TextButton.BackgroundTransparency = 0.5
+TextButton.BorderSizePixel = 0
+TextButton.Position = UDim2.new(1, -120, 0, 10) -- Adjusted the position to top right corner
+TextButton.Size = UDim2.new(0, 100, 0, 18)
+TextButton.Font = Enum.Font.SourceSans
+TextButton.Text = "Rightclick"
+TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton.TextSize = 18
+local UICorner = Instance.new("UICorner")
+UICorner.Parent = TextButton
+
+-- Function to send the keybind
+local function OnButtonClick()
+    local vim = game:GetService("VirtualInputManager")
+    vim:SendKeyEvent(true, "ButtonL2", false, game)
+end
+
+-- Event connection
+TextButton.MouseButton1Click:Connect(OnButtonClick)
+end)
+
+if getgenv().NoDelay == true then
+game:GetService("CorePackages").Packages:Destroy()
+end
+
+local trashFolder = Tib:AddFolder("TrashTalk")
+trashFolder:AddButton("TrashTalkk", function()
+    local Player = game.Players.LocalPlayer
+    local PlayerGui = Player:WaitForChild("PlayerGui")
+
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "Corporations"
+    ScreenGui.ResetOnSpawn = false -- Keep the GUI after respawn
+    ScreenGui.Parent = PlayerGui
+
+    local TextButton = Instance.new("TextButton")
+    TextButton.Name = "Imperial"
+    TextButton.Parent = ScreenGui
+    TextButton.BackgroundColor3 = Color3.fromRGB(0, 0, 139)
+    TextButton.BackgroundTransparency = 0.5
+    TextButton.BorderSizePixel = 0
+    TextButton.Position = UDim2.new(1, -120, 0, 40) -- Adjusted the position to top right corner
+    TextButton.Size = UDim2.new(0, 100, 0, 18)
+    TextButton.Font = Enum.Font.SourceSans
+    TextButton.Text = "T"
+    TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TextButton.TextSize = 18
+    local UICorner = Instance.new("UICorner")
+    UICorner.Parent = TextButton
+
+    -- Function to send the keybind
+    local function OnButtonClick()
+        local vim = game:GetService("VirtualInputManager")
+        vim:SendKeyEvent(true, "T", false, game)
+    end
+
+    -- Event connection
+    TextButton.MouseButton1Click:Connect(OnButtonClick)
+end)
+trashFolder:AddButton("TrashTalki", function()
+    local words = {
+        "where are you aiming at?",
+        "sonned",
+        "bad",
+        "even my grandma has faster reactions",
+        ":clown:",
+        "gg = get good",
+        "im just better",
+        "my gaming chair is just better",
+        "dog",
+        "skill",
+        ":Skull:",
+        "skibidi toilet",
+        "Baby gronk ohio sigma",
+        "omg you are so good :screm:",
+        "awesome",
+        "word is bond",
+        "catch a breather in the air",
+        "do not bully pliisss :sobv:",
+        "it was your lag ofc",
+        "fly high",
+        "*cough* *cough*",
+        "son",
+        "already mad?",
+        "please don't report :sobv:",
+        "sob harder",
+    }
+
+    local event = game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest
+    local player = game.Players.LocalPlayer
+    local keybind = "T" -- change hotkey here
+
+    player:GetMouse().KeyDown:Connect(function(key)
+        if key == keybind then
+            event:FireServer(words[math.random(1, #words)], "All")
+        end
+   end)
+end)
+
+local BypassFolder = Tib:AddFolder("Anti Cheat Bypass")
+BypassFolder:AddLabel("Anti Cheats")
+local Bypass1 = BypassFolder:AddSwitch("Hood Custom Camlock Bypass", function(bool)
+	getgenv().Settings.FearLas.Camera.HoodCustomsBypass = bool
+end)
+Bypass1:Set(false)
+local Bypass2 = BypassFolder:AddSwitch("DaHood Bypass", function(bool)
+	getgenv().DaHoodBypass = bool
+end)
+Bypass2:Set(false)
+local Bypass3 = BypassFolder:AddSwitch("Untitled Hood Bypass", function(bool)
+	getgenv().UntitledHoodBypass = bool
+end)
+Bypass3:Set(false)
+if getgenv().UntitledHoodBypass == true then
+local _1;
+_1 = hookmetamethod(game, "__namecall", function(self, ...)
+    if not checkcaller() and getnamecallmethod() == "FireServer" then
+        if tostring(self.Name) == ".gg/untitledhood" then
+            local args = {...}
+            if tostring(args[1]) == "ForceDetect" or tostring(args[1]) == "TeleportDetect" or tostring(args[1]) == "GUI_CHECK" then
+                return print("anticheat detected something sussy");
+            end
+        end
+    end
+    return _1(self, ...);
+end)
+end
+
+if getgenv().DaHoodBypass == true then
+assert(getrawmetatable)
+grm = getrawmetatable(game)
+setreadonly(grm, false)
+old = grm.__namecall
+grm.__namecall = newcclosure(function(self, ...)
+    local args = {...}
+    if tostring(args[1]) == "TeleportDetect" then
+        return
+    elseif tostring(args[1]) == "CHECKER_1" then
+        return
+    elseif tostring(args[1]) == "CHECKER" then
+        return
+    elseif tostring(args[1]) == "GUI_CHECK" then
+        return
+    elseif tostring(args[1]) == "OneMoreTime" then
+        return
+    elseif tostring(args[1]) == "checkingSPEED" then
+        return
+    elseif tostring(args[1]) == "BANREMOTE" then
+        return
+    elseif tostring(args[1]) == "PERMAIDBAN" then
+        return
+    elseif tostring(args[1]) == "KICKREMOTE" then
+        return
+    elseif tostring(args[1]) == "BR_KICKPC" then
+        return
+    elseif tostring(args[1]) == "BR_KICKMOBILE" then
+        return
+    end
+    return old(self, ...)
+end)
+end
+--// Config System
+
+--// Quick Execute
+	local Console = Tub:AddConsole({
+			["y"] = 100,
+			["source"] = "Lua",
+		})
+		Console:Set("-- Gamer time!\nfor i = 1, 9 do \n    print(i)\nend")
+		print(Console:Get())
+		local HA = Tub:AddHorizontalAlignment()
+		HA:AddButton("Execute", function()
+			loadstring(Console:Get())()
+		end)
+		HA:AddButton("Clear", function()
+			Console:Set("")
+		end)
+		
+	end
+	Tab:Show()
+	library:FormatWindows()
+end
